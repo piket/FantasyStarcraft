@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Fantasy Starcraft 2</title>
+    <link rel="icon" type="image/jpg" href="/images/favicon.ico">
+    <!-- Latest compiled and minified CSS & JS -->
+    <link rel="stylesheet" media="screen" href="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    <script src="http://code.jquery.com/jquery.js"></script>
+    <script src="http://netdna.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+    <script src="/js/script.js"></script>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-inverse">
+  <div class="container-fluid">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+      <a class="navbar-brand" href="/">Fantasy Starcraft 2</a>
+    </div>
+
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li><a href="/">Tournaments</a></li>
+        <li><a href="/auth/account/<%=user.id%>">Your Leagues</a></li>
+      </ul>
+      <ul class="nav navbar-nav navbar-right">
+      <% if (user) { %>
+        <li>Welcome <%=user.name%></li>
+      <% } else { %>
+        <li><a href="#" id="login" class="authBtn">Login</a></li>
+        <li><a href="/auth/signup" class="authBtn">Signup</a></li>
+        <form id="loginForm" action="/auth/login" method="post" class="navbar-form">
+        <div class="form-group">
+        <input type="text" name="name" placeholder="Username" id="username" class="form-control">
+        <input type="password" name="password" placeholder="Password" id="password" class="form-control">
+        </div>
+        <input type="submit" value="Login" class="btn btn-primary btn-sm">
+        <button id="cancelLogin" class="btn btn-primary btn-sm">Cancel</button>
+      <% } %>
+      </ul>
+    </div><!-- /.navbar-collapse -->
+  </div><!-- /.container-fluid -->
+</nav>
+
+    <div class="container">
+
+

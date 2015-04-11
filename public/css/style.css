@@ -1,0 +1,41 @@
+#loginForm {
+    display: none;
+}
+
+body {
+    background-image: url('/images/starfield_nasa.jpg');
+    background-repeat: repeat-x;
+    background-attachment: fixed;
+    background-position: center top;
+    color: white;
+}
+
+hr {
+    border-color: rgb(0,51,102);
+}
+
+nav.navbar {
+    background-color: rgba(0,51,102,0.5);
+    border-color: rgba(0,51,102,0.5);
+    color: rgba(0,0,0,1);
+}
+
+.navbar-brand {
+    color: white;
+}
+
+.navbar-nav {
+    color: white;
+}
+
+img.icon {
+    width: 30px;
+}
+
+img.icon-sm {
+    width: 20px;
+}
+
+img.icon-lg {
+    width: 50px;
+}

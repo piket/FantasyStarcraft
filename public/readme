@@ -1,0 +1,34 @@
+Fantasy Starcraft 2
+
+1. Select a season/tournament to play in.
+-> Generate a list of players/teams participating and their seed is applicable
+2. Pick # players to create your team.
+-> Show prediction data, various statistics for forseen matchups, etc
+3. Update status of your team, check scores.
+-> Grab game/match/tournament results
+
+
+Extras:
+Drafting mode
+Fantasy League with rankings and winner
+
+
+Point structure:
+Game Win: +2
+Game Loss: -1
+3-Game Win Streak: +1
+6-Game Win Streak: +2
+9-Game Win Streak: +3
+Break another's Streak: +1
+
+
+Databases:
+users - one to many -> fantasy Teams
+tournaments - one to many -> fantasyTeams
+fantasyTeams - many to one -> users, many to one -> tournaments
+
+api: http://aligulac.com/about/api/     api key: pEtSegtDJUOLseef32gl
+secondary api: http://www.sc2ranks.com/api/usage
+
+flag icons: http://www.famfamfam.com/lab/icons/flags/
+race icons: http://printgestalt.deviantart.com/art/Sc2-Races-Logos-Vector-195473157
