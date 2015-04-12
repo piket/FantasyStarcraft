@@ -1,3 +1,15 @@
+@font-face {
+    font-family: 'starcraftnormal';
+    src: url('/font/starcraftnormal-webfont.eot');
+    src: url('/font/starcraftnormal-webfont.eot?#iefix') format('embedded-opentype'),
+         url('/font/starcraftnormal-webfont.woff2') format('woff2'),
+         url('/font/starcraftnormal-webfont.woff') format('woff'),
+         url('/font/starcraftnormal-webfont.ttf') format('truetype'),
+         url('/font/starcraftnormal-webfont.svg#starcraftnormal') format('svg');
+    font-weight: normal;
+    font-style: normal;
+}
+
 #loginForm {
     display: none;
 }
@@ -8,10 +20,16 @@ body {
     background-attachment: fixed;
     background-position: center top;
     color: white;
+    font-family: 'starcraftnormal';
 }
 
 hr {
     border-color: rgb(0,51,102);
+}
+
+p.footer-text {
+    font-size: 8pt;
+    font-family: 'helvitica';
 }
 
 nav.navbar {
@@ -29,13 +47,17 @@ nav.navbar {
 }
 
 img.icon {
-    width: 30px;
+    width: 32px;
 }
 
 img.icon-sm {
-    width: 20px;
+    width: 24px;
 }
 
 img.icon-lg {
-    width: 50px;
+    width: 48px;
+}
+
+img.icon-xl {
+    width: 64px;
 }
