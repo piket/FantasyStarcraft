@@ -87,26 +87,27 @@ router.get('/test',function(req,res) {
      // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY+"&uplink__parent=41322&distance__range=1,3&limit=100" // GSL 2015 Season 2
      // var url = "http://aligulac.com/search/json?q=life" // use built-in search function
      // var url ="http://aligulac.com/api/v1/activerating/?apikey="+process.env.ALIGULAC_KEY+"&order_by=-rating" // master ranking list
-     // var url ="http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&tag=Life"
-     // var url = "http://aligulac.com/api/v1/activerating?apikey="+process.env.ALIGULAC_KEY + "&id=5308675"
-     var url = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&pla__id=3"
-     var url2 = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&plb__id=3"
-     async.map([url,url2],function(call,callback) {
+     var url ="http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id=3"
+     // var url = "http://aligulac.com/api/v1/activerating?apikey="+process.env.ALIGULAC_KEY + "&player__id=3"//id=5308675"
+     // var url = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&pla__id=3"
+     // var url2 = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&plb__id=3"
+     // var url = "http://aligulac.com/api/v1/event/?apikey="+process.env.ALIGULAC_KEY+"&order_by=period"
+     // async.map([url,url2],function(call,callback) {
 
-     request(call,function(error,response,data){
+     request(url,function(error,response,data){
         if(!error && response.statusCode == 200) {
             console.log("Pulling data...\n");
-            callback(data);
-            // res.send(data);
+            // callback(null,data);
+            res.send(data);
         }
         else {
             console.log("Error:",error);
-            callback(error);
+            // callback(error);
         }
     });
-     }, function(err,result) {
-        res.send(result);
-     })
+     // }, function(err,result) {
+     //    res.send(result);
+     // })
  });
 
 // listing of pros with sorting and filtering options
@@ -116,6 +117,46 @@ router.get('/pros',function(req,res) {
 
 // view a specific tournament's details and roster
 router.get('/:tournament',function(req,res) {
+    console.log(req.params.tournament)
+    var url = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY + "&tag=";
+
+    var name = req.params.tournament.replace(/_/g,' ')
+
+    db.tournament.find({where: {name:{ilike:name}}}).then(function(tourney) {
+        // async.map(tourney.roster,function(player,callback) {
+        //     request(url + player,function(error,response,data) {
+        //      if(!error && response.statusCode == 200) {
+        //         console.log("Pulling data for player: " + player);
+        //         callback(null,JSON.parse(data).objects[0]);
+        //     }
+        //     else {
+        //         console.log("Error:",error);
+        //         res.send("Error: "+error);
+        //     }
+        // });
+        // }, function(err,result) {
+        //     if (err) throw err;
+            // res.send(result);
+            res.render('main/tournament',{param:req.params.tournament,name:tourney.name,start:tourney.startDate,end:tourney.endDate});
+        // });
+    });
+    // var url = "http://wiki.teamliquid.net/starcraft2/" + req.params.tournament.replace('+','/');
+
+    // request(url,function(error,response,data) {
+    //     if(!error && response.statusCode == 200) {
+    //         console.log("Pulling data...");
+    //         var $ = cheerio.load(data);
+    //         res.send();
+    //     }
+    //     else {
+    //         console.log("Error:",error);
+    //         res.send("Error: "+error);
+    //     }
+    // });
+    // res.send(req.params)
+});
+
+router.get('/tournament/:tournament',function(req,res) {
     console.log(req.params.tournament)
     var url = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY + "&tag=";
 
@@ -135,24 +176,10 @@ router.get('/:tournament',function(req,res) {
         });
         }, function(err,result) {
             if (err) throw err;
-            // res.send(result);
-            res.render('main/tournament',{roster:result,name:tourney.name,start:tourney.startDate,end:tourney.endDate});
+            // console.log(result);
+            res.send({roster:result});
         });
     });
-    // var url = "http://wiki.teamliquid.net/starcraft2/" + req.params.tournament.replace('+','/');
-
-    // request(url,function(error,response,data) {
-    //     if(!error && response.statusCode == 200) {
-    //         console.log("Pulling data...");
-    //         var $ = cheerio.load(data);
-    //         res.send();
-    //     }
-    //     else {
-    //         console.log("Error:",error);
-    //         res.send("Error: "+error);
-    //     }
-    // });
-    // res.send(req.params)
 });
 
 // view a specific player's profile and stats
@@ -160,6 +187,58 @@ router.get('/pros/:player',function(req,res) {
     res.send(req.params);
 });
 
+router.get('/pros/:player/snapshot',function(req,res) {
+    var playerURL = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id="+req.params.player
+    request(playerURL,function(error,response,playerData) {
+        if(!error && response.statusCode == 200) {
+                console.log("Pulling data for player: " + req.params.player);
+                // res.send(playerData);
+                var ratingId = JSON.parse(playerData).objects[0].current_rating.id;
+
+                request("http://aligulac.com/api/v1/activerating/?apikey="+process.env.ALIGULAC_KEY + "&id="+ratingId, function(error,response,ratingData){
+                    if(!error && response.statusCode == 200) {
+
+                var id = JSON.parse(playerData).objects[0].id
+                var urls = ["http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&pla__id="+id,"http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&plb__id="+id]
+
+                async.map(urls,function(call,callback) {
+                    request(call,function(error,response,data) {
+                     if(!error && response.statusCode == 200) {
+                        console.log("Pulling stat data:",call);
+
+                        var dataArr = JSON.parse(data).objects.map(function(obj) {
+                            if (obj.pla.id == req.params.player) {
+                                return {player:obj.sca,opponent:obj.scb,matchup:obj.rca + "v" + obj.rcb};
+                            } else {
+                                return {player:obj.scb,opponent:obj.sca,matchup:obj.rcb + "v" + obj.rca};
+                            }
+                        });
+
+                        callback(null,dataArr);
+                    } else {
+                        console.log("Error:",error);
+                        res.send("Error: " + error);
+                    }
+                    });
+                },function(err,result) {
+                    if (err) throw err;
+                    var flatResults = result[0].concat(result[1]);
+                    console.log("Stats loaded for:",req.params.player);
+                    res.send({playerData:JSON.parse(playerData).objects[0],count:flatResults.length,results:flatResults,ratingData:JSON.parse(ratingData).objects[0]});
+                });
+            }
+            else {
+                console.log("Error:",error);
+                res.send("Error: "+error);
+            }
+    });
+            }
+            else {
+                console.log("Error:",error);
+                res.send("Error: "+error);
+            }
+});
+});
 // view a specific league you are apart of
 router.get('/league/:leagueid',function(req,res) {
     res.send(req.params);

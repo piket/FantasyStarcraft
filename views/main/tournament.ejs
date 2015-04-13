@@ -3,20 +3,30 @@
 <h1 class="text-center"><%=name%></h1>
 <hr>
 <div class="row">
+    <div class="col-md-2 slot" id="slot1"><h3 class="text-center">Player Slot 1</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot2"><h3 class="text-center">Player Slot 2</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot3"><h3 class="text-center">Player Slot 3</h3><h4 class="text-center"></h4></div>
+    <div class="col-md-2 slot" id="slot4"><h3 class="text-center">Player Slot 4</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot5"><h3 class="text-center">Player Slot 5</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot6"><h3 class="text-center">Player Slot 6</h3><h4 class="text-center"></h4></div>
+</div>
+<br>
+<div class="row">
     <div class="col-md-6 pane roster">
+        <input type="hidden" value="/tournament/<%=param%>" id="param">
         <ul class="list-group roster">
-        <% roster.forEach(function(player, idx) { %>
-            <li href="/pros/<%=player.id%>" class="list-group-item text-center<%=idx === 0 ? ' selected':''%>"><img src="/images/flags_iso/24/<%=player.country.toLowerCase()%>.png%>" class="icon-sm pull-left">  <%=player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent'%> <%=player.tag%><img src="/images/<%=player.race%>.png" class="icon-sm pull-right"></li>
-        <%})%>
+            <li class="blank"></li>
         </ul>
+        <img class="loading" src="/images/ajax-loader.gif">
     </div>
-    <div class="col-md-6 pane">
-        <table>
-            <tr><td>Overall Average:</td><td id="overallRecord"></td></tr>
-            <tr><td>Average vP</td><td id="vP"></td></tr>
-            <tr><td>Average vT</td><td id="vT"></td></tr>
-            <tr><td>Average vZ</td><td id="vT"></td></tr>
+    <div class="col-md-6 pane stats">
+        <table class="statTable">
+            <tr><td class="pull-right">Overall Average</td><td id="overallRecord" class="stat"></td></tr>
+            <tr><td class="pull-right">Average vP</td><td id="vP" class="stat"></td></tr>
+            <tr><td class="pull-right">Average vT</td><td id="vT" class="stat"></td></tr>
+            <tr><td class="pull-right">Average vZ</td><td id="vZ" class="stat"></td></tr>
+            <tr><td class="pull-right">Overall Rank</td><td id="overallRank" class="stat"></td></tr>
+            <tr><td class="pull-right">Rank vP</td><td id="vPRank" class="stat"></td></tr>
+            <tr><td class="pull-right">Rank vT</td><td id="vTRank" class="stat"></td></tr>
+            <tr><td class="pull-right">Rank vz</td><td id="vZRank" class="stat"></td></tr>
         </table>
+        <img class="loading" src="/images/ajax-loader.gif">
     </div>
 </div>
 
