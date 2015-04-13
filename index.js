@@ -24,6 +24,60 @@ app.use(function(req,res,next) {
 
     res.locals.alerts = req.flash();
 
+    res.locals.checkDate = function(dateStr) {
+        console.log(dateStr)
+        var date = new Date();
+        var month = dateStr.slice(0,3);
+        var m = -2;
+
+        switch (month) {
+            case 'Jan':
+                m = 0;
+                break;
+            case 'Feb':
+                m = 1;
+                break;
+            case 'Mar':
+                m = 2;
+                break;
+            case 'Apr':
+                m = 3;
+                break;
+            case 'May':
+                m = 4;
+                break;
+            case 'Jun':
+                m = 5;
+                break;
+            case 'Jul':
+                m = 6;
+                break;
+            case 'Aug':
+                m = 7;
+                break;
+            case 'Sep':
+                m = 8;
+                break;
+            case 'Oct':
+                m = 9;
+                break;
+            case 'Nov':
+                m = 10;
+                break;
+            case 'Dec':
+                m = 11;
+                break;
+            default:
+                m = -1;
+                break;
+        }
+
+        if (m <= date.getMonth()) return false;
+        if (parseInt(dateStr.slice(4)) <= date.getDate() && m === date.getMonth()) return false;
+
+        return true;
+    }
+
     next();
 });
 

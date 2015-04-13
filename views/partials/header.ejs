@@ -28,12 +28,12 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href="/">Tournaments</a></li>
+        <li><a href="/test">Tournaments</a></li>
         <li><a href="/auth/account/<%=user.id%>">Your Leagues</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
       <% if (user) { %>
-        <li>Welcome <%=user.name%></li>
+        <li><a href="/auth/account">Welcome <%=user.name%></a></li>
       <% } else { %>
         <li><a href="#" id="login" class="authBtn">Login</a></li>
         <li><a href="/auth/signup" class="authBtn">Signup</a></li>
@@ -44,6 +44,7 @@
         </div>
         <input type="submit" value="Login" class="btn btn-primary btn-sm">
         <button id="cancelLogin" class="btn btn-primary btn-sm">Cancel</button>
+        </form>
       <% } %>
       </ul>
     </div><!-- /.navbar-collapse -->
@@ -51,5 +52,6 @@
 </nav>
 
     <div class="container">
-
+<% include ./alerts.ejs %>
+<br>
 

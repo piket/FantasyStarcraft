@@ -1,7 +1,36 @@
 <% include ../partials/header.ejs %>
 
 <h1 class="text-center">Welcome to Fantasy Starcraft 2</h1>
-<img class="icon-sm" src="/images/protoss.png"><img class="icon" src="/images/terran.png"><img class="icon-lg" src="/images/zerg.png"><img class="icon-xl" src="/images/protoss.png"><br>
+<img class="icon-sm" src="/images/P.png"><img class="icon" src="/images/T.png"><img class="icon-lg" src="/images/Z.png"><img class="icon-xl" src="/images/P.png"><br>
 <img class="icon-sm" src="/images/flags_iso/24/kr.png"><img class="icon" src="/images/flags_iso/32/kr.png"><img class="icon-lg" src="/images/flags_iso/48/kr.png"><img class="icon-xl" src="/images/flags_iso/64/kr.png">
+
+<div class="row">
+<% for(var i = events.length - 1; i > 1; i--) { %>
+    <% if(checkDate(events[i][1]) && events[i][2].href.indexOf('redlink=1') === -1) { %>
+    <div class="jumbotron col-md-6 col-md-offset-3">
+        <div class="row">
+            <h3 class="text-center"><%=events[i][2].text%></h3>
+            <h4 class="text-center"><%=events[i][0].replace('&#xA0;',' ') + ' - ' + events[i][1].replace('&#xA0;',' ')%></h4>
+            <div class="row">
+                <div class="col-md-4">
+                    <h5><b>Location:</b> <%=events[i][6]%></h5>
+                </div>
+                <div class="col-md-4">
+                    <h5><b>Prize Pool:</b> <%=events[i][4]%></h5>
+                </div>
+                <div class="col-md-4">
+                    <h5><b>Players:</b> <%=events[i][5]%></h5>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-md-offset-4">
+                    <a href=<%=events[i][2].href%> class="btn btn-warning bottomBtn btn-sm">Expanded View</a>
+                </div>
+            </div>
+        </div>
+    </div>
+<% } %>
+<% } %>
+</div>
 
 <% include ../partials/footer.ejs %>

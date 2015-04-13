@@ -3,13 +3,17 @@
     <div class="col-sm-6 col-sm-offset-3">
         <form id="signup" action="/auth/signup" method="post">
             <div class="form-group">
-                <input type="text" name="name" placeholder="Enter a username" class="form-control">
+            <label for="name" id="unameLabel" class="alertLabel">Please enter a valid username of at least 4 characters</label>
+                <input id="uname" type="text" name="name" placeholder="Enter a username" class="form-control">
 <br>
-                <input type="text" name="email" placeholder="Enter an email address" class="form-control">
+                <label id="emailLabel" for="email" class="alertLabel">Please enter a valid email address</label>
+                <input id="email" type="text" name="email" placeholder="Enter an email address" class="form-control">
 <br>
-                <input type="password" name="password" placeholder="Enter a password" class="form-control">
+                <label for="password" id="pwdLabel" class="alertLabel">Please enter a valid password of at least 8 characters</label>
+                <input id="pwd" type="password" name="password" placeholder="Enter a password" class="form-control">
 <br>
-                <input type="password" name="password2" placeholder="Re-enter your password" class="form-control">
+                <label for="password2" id="pwd2Label" class="alertLabel">Your passwords do not match</label>
+                <input id="pwd2" type="password" name="password2" placeholder="Re-enter your password" class="form-control">
             </div>
             <input type="submit" value="Sign Up" class="btn btn-primary btn-lg center-block">
         </form>

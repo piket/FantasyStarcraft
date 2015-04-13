@@ -20,11 +20,15 @@ body {
     background-attachment: fixed;
     background-position: center top;
     color: white;
-    font-family: 'starcraftnormal';
+    font-family: 'helvitica';
 }
 
 hr {
     border-color: rgb(0,51,102);
+}
+
+h1,h2 {
+    font-family: 'starcraftnormal';
 }
 
 p.footer-text {
@@ -36,6 +40,21 @@ nav.navbar {
     background-color: rgba(0,51,102,0.5);
     border-color: rgba(0,51,102,0.5);
     color: rgba(0,0,0,1);
+    font-family: 'starcraftnormal';
+}
+
+input {
+    font-family: 'helvitica';
+}
+
+.btn {
+    font-family: 'starcraftnormal';
+}
+
+.jumbotron {
+    background-color: rgba(0,51,102,0.75);
+    position: relative;
+    padding-bottom: 0;
 }
 
 .navbar-brand {
@@ -60,4 +79,43 @@ img.icon-lg {
 
 img.icon-xl {
     width: 64px;
+}
+
+.bottomBtn {
+    /*background-color: rgba(0,0,0,0.5);*/
+    margin-top: 10px;
+    /*position: absolute;*/
+    /*bottom: 0;*/
+}
+
+.alertLabel {
+    padding: 4px 4px 4px 4px;
+    border: 1px solid rgba(102,0,0,0.8);
+    border-radius: 4px;
+    background-color: rgba(102,0,0,0.8);
+    color: red;
+    display: none;
+}
+
+ul.roster>li.list-group-item {
+    background-color: rgba(0,51,102,0.5);
+    border-color: rgba(0,51,102,0.5);
+    color: rgba(255,255,255,1);
+}
+
+ul.roster>li.selected {
+    background-color: rgba(255,255,255,0.5);
+    border-color: rgba(255,255,255,0.5);
+    color: rgba(0,0,0,1);
+}
+
+ul.roster>li.list-group-item:hover {
+    cursor: pointer;
+}
+
+div.pane {
+    /*border: 1px solid rgba(0,51,102,0.5);*/
+    /*border-radius: 4px;*/
+    height: 600px;
+    overflow: auto;
 }

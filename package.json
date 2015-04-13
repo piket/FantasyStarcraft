@@ -17,6 +17,7 @@
   },
   "homepage": "https://github.com/piket/FantasyStarcraft",
   "dependencies": {
+    "async": "^0.9.0",
     "bcrypt": "^0.8.2",
     "body-parser": "^1.12.2",
     "cheerio": "^0.19.0",

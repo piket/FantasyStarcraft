@@ -1,5 +1,23 @@
 <% include ../partials/header.ejs %>
 
-<h1 class="text-center">Tournament page</h1>
+<h1 class="text-center"><%=name%></h1>
+<hr>
+<div class="row">
+    <div class="col-md-6 pane roster">
+        <ul class="list-group roster">
+        <% roster.forEach(function(player, idx) { %>
+            <li href="/pros/<%=player.id%>" class="list-group-item text-center<%=idx === 0 ? ' selected':''%>"><img src="/images/flags_iso/24/<%=player.country.toLowerCase()%>.png%>" class="icon-sm pull-left">  <%=player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent'%> <%=player.tag%><img src="/images/<%=player.race%>.png" class="icon-sm pull-right"></li>
+        <%})%>
+        </ul>
+    </div>
+    <div class="col-md-6 pane">
+        <table>
+            <tr><td>Overall Average:</td><td id="overallRecord"></td></tr>
+            <tr><td>Average vP</td><td id="vP"></td></tr>
+            <tr><td>Average vT</td><td id="vT"></td></tr>
+            <tr><td>Average vZ</td><td id="vT"></td></tr>
+        </table>
+    </div>
+</div>
 
 <% include ../partials/footer.ejs %>

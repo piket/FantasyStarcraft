@@ -16,14 +16,16 @@ router.get('/login',function(req,res) {
 });
 
 router.post('/signup',function(req,res) {
+    // res.send(req.body);
+
     db.user.findOrCreate({where: {email:req.body.email},defaults:{email:req.body.email,name:req.body.name,password:req.body.password}}).spread(function(user,created) {
         if (created) {
             req.flash('success','New user created. Please login.')
-            res.redirect('auth/login')
+            res.redirect('/auth/login')
         }
         else {
             req.flash('warning','There is already an account with that email address.');
-            res.redirect('auth/signup');
+            res.redirect('/auth/signup');
         }
     }).catch(function(error) {
         if(error){
@@ -44,7 +46,8 @@ router.post('/signup',function(req,res) {
 });
 
 router.post('/login',function(req,res) {
-    db.user.find({where:{email:req.body.email}}).then(function(user){
+    console.log(req.body)
+    db.user.find({where:{name:req.body.name}}).then(function(user){
         if(user){
             //check password
             bcrypt.compare(req.body.password,user.password,function(err,result){
@@ -61,12 +64,12 @@ router.post('/login',function(req,res) {
                     res.redirect('/');
                 }else{
                     req.flash('danger','Invalid password.');
-                    res.redirect('/auth/login');
+                    res.redirect('/');
                 }
             })
         }else{
             req.flash('danger','Unknown user. Please sign up.');
-            res.redirect('/auth/login');
+            res.redirect('/');
         }
     });
 });
