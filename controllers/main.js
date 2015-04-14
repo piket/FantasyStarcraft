@@ -55,10 +55,7 @@ router.get('/',function(req,res) {
 router.get('/gen_tourney',function(req,res) {
     var playerRoster = [
     "San", "Panic", "YongHwa", 'First', 'Seed', 'Dear', 'Super', 'Terminator', 'Rain', 'MC', 'FanTaSy', 'MarineKing', 'GuMiho', 'Bomber', 'Hack', 'TaeJa', 'Heart',
-    'YoDa', 'Dream', 'Maru', 'PenguiN', 'Curious', 'Dark', 'Soulkey'
-    ];
-    var qualifierRoster = [
-    'Pigbaby', 'Bbyong'  , 'Impact',
+    'YoDa', 'Dream', 'Maru', 'PenguiN', 'Curious', 'Dark', 'Soulkey', 'Pigbaby', 'Bbyong'  , 'Impact',
     'Trap',  'SuperNova'   ,  'Sacsri',
     'MyuNgSiK',    'Sorry',   'Shine',
     'Trust'   ,'Flash' , 'Symbol',
@@ -72,8 +69,25 @@ router.get('/gen_tourney',function(req,res) {
     var endDate = new Date(2015,5,27);
     db.tournament.find({where: {name:"2015 Global Starcraft II League Season 2"}}).then(function(tourney) {
         if(tourney !== null) {
-            tourney.roster = tourney.roster.concat(qualifierRoster);
-            tourney.save()
+            async.map(playerRoster.map(function(player) {return "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&tag="+player}),
+                function(player,callback) {
+                    request(player,function(error,response,data) {
+                        if(!error && response.statusCode == 200) {
+                            console.log("Pulling data...\n");
+                            callback(null,JSON.parse(data).objects[0].id)
+                        }
+                        else {
+                            console.log("Error:",error);
+                            callback(error);
+                        }
+                    })
+                },function(err,result) {
+                if(err) throw err;
+                    console.log(result);
+                    tourney.roster = result;
+                    tourney.save();
+                });
+
         }
         res.send(tourney);
     })
@@ -85,9 +99,10 @@ router.get('/test',function(req,res) {
      // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY+"&uplink__parent=43682&distance__range=1,3&limit=100"; // KeSPA 2015 Season 1
      // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY +"&uplink__parent=39565&distance__range=1,3&limit=100" // WCS 2015 Season 2
      // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY+"&uplink__parent=41322&distance__range=1,3&limit=100" // GSL 2015 Season 2
+     var url = "http://aligulac.com/api/v1/match?apikey="+process.env.ALIGULAC_KEY+"&eventobj__uplink__parent=41322&limit=0" // all matches for GSL 2015 Season 2
      // var url = "http://aligulac.com/search/json?q=life" // use built-in search function
      // var url ="http://aligulac.com/api/v1/activerating/?apikey="+process.env.ALIGULAC_KEY+"&order_by=-rating" // master ranking list
-     var url ="http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id=3"
+     // var url ="http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id=3"
      // var url = "http://aligulac.com/api/v1/activerating?apikey="+process.env.ALIGULAC_KEY + "&player__id=3"//id=5308675"
      // var url = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&pla__id=3"
      // var url2 = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&plb__id=3"
@@ -116,7 +131,7 @@ router.get('/pros',function(req,res) {
 });
 
 // view a specific tournament's details and roster
-router.get('/:tournament',function(req,res) {
+router.get('/tournament/:tournament',function(req,res) {
     console.log(req.params.tournament)
     var url = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY + "&tag=";
 
@@ -156,29 +171,31 @@ router.get('/:tournament',function(req,res) {
     // res.send(req.params)
 });
 
-router.get('/tournament/:tournament',function(req,res) {
+router.get('/pull/:tournament',function(req,res) {
     console.log(req.params.tournament)
-    var url = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY + "&tag=";
 
     var name = req.params.tournament.replace(/_/g,' ')
 
     db.tournament.find({where: {name:{ilike:name}}}).then(function(tourney) {
-        async.map(tourney.roster,function(player,callback) {
-            request(url + player,function(error,response,data) {
+        var url = "http://aligulac.com/api/v1/player/set/"+tourney.roster.join(';')+"/?apikey="+process.env.ALIGULAC_KEY;
+        request(url, function(error,response,data) {
+        // async.map(tourney.roster,function(player,callback) {
+            // request(url + player,function(error,response,data) {
              if(!error && response.statusCode == 200) {
-                console.log("Pulling data for player: " + player);
-                callback(null,JSON.parse(data).objects[0]);
+                // console.log("Pulling data for player: " + player);
+                // callback(null,JSON.parse(data).objects[0]);
+                res.send({roster:JSON.parse(data).objects});
             }
             else {
                 console.log("Error:",error);
                 res.send("Error: "+error);
             }
         });
-        }, function(err,result) {
-            if (err) throw err;
-            // console.log(result);
-            res.send({roster:result});
-        });
+        // }, function(err,result) {
+        //     if (err) throw err;
+        //     // console.log(result);
+        //     res.send({roster:result});
+        // });
     });
 });
 

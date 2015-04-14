@@ -2,14 +2,29 @@
 
 <h1 class="text-center"><%=name%></h1>
 <hr>
+<% if(user) { %>
 <div class="row">
     <div class="col-md-2 slot" id="slot1"><h3 class="text-center">Player Slot 1</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot2"><h3 class="text-center">Player Slot 2</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot3"><h3 class="text-center">Player Slot 3</h3><h4 class="text-center"></h4></div>
     <div class="col-md-2 slot" id="slot4"><h3 class="text-center">Player Slot 4</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot5"><h3 class="text-center">Player Slot 5</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot6"><h3 class="text-center">Player Slot 6</h3><h4 class="text-center"></h4></div>
 </div>
 <br>
+    <form id="createTeamForm" action="/manage/create/team" method="post">
+    <div class="form-group">
+        <input type="text" name="name" placeholder="Enter your team name">
+    </div>
+    <input type="hidden" name="slot1" id="inputSlot1" value="">
+    <input type="hidden" name="slot2" id="inputSlot2" value="">
+    <input type="hidden" name="slot3" id="inputSlot3" value="">
+    <input type="hidden" name="slot4" id="inputSlot4" value="">
+    <input type="hidden" name="slot5" id="inputSlot5" value="">
+    <input type="hidden" name="slot6" id="inputSlot6" value="">
+    <input type="submit" class="btn btn-warning btn-lg" value="Create Team">
+    </form>
+<br>
+<% } %>
 <div class="row">
     <div class="col-md-6 pane roster">
-        <input type="hidden" value="/tournament/<%=param%>" id="param">
+        <input type="hidden" value="/pull/<%=param%>" id="param">
         <ul class="list-group roster">
             <li class="blank"></li>
         </ul>

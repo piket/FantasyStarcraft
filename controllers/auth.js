@@ -4,7 +4,15 @@ var db = require('../models');
 var router = express.Router();
 
 router.get('/account',function(req,res) {
-    res.render('auth/account');
+    if(req.session.user) {
+        db.user.find({where: {id:req.session.user.id}, include: [db.team]}).then(function(user) {
+            res.render('/auth/account',{name:user.name,teams:user.teams})
+        })
+        // res.render('auth/account');
+    }
+    else {
+        res.redirect('/');
+    }
 });
 
 router.get('/signup',function(req,res) {

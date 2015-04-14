@@ -1,5 +1,16 @@
 <% include ../partials/header.ejs %>
 
-<h1 class="text-center">Account page</h1>
+<h1 class="text-center">Your Teams</h1>
+<div class="row">
+    <% teams.forEach(team) { %>
+    <div class="jumbotron">
+        <h2 class="text-center"><%=team.name%></h2>
+        <hr>
+        <input type="hidden" class="playerArr" value="<%=team.slot1%>;<%=team.slot2%>;<%=team.slot3%>;<%=team.slot4%>;<%=team.slot5%>;<%=team.slot6%>">
+        <ul class="line-up">
+        </ul>
+    </div>
+    <% } %>
+</div>
 
 <% include ../partials/footer.ejs %>

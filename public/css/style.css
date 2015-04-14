@@ -154,3 +154,7 @@ span.teamName {
     border-radius: 16px;
     height: 100px;
 }
+
+input[type=text] {
+    color: black;
+}

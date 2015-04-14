@@ -10,8 +10,7 @@ module.exports = function(sequelize, DataTypes) {
       beforeCreate: function(team,options,sendback) {
         sendback(null,team);
       }
-    }
-  }, {
+    },
     classMethods: {
       associate: function(models) {
         // associations can be defined here
@@ -19,6 +18,7 @@ module.exports = function(sequelize, DataTypes) {
         models.team.belongsTo(models.league);
       }
     }
+
   });
   return team;
 };

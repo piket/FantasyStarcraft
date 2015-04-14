@@ -107,19 +107,30 @@ $(function(){
                 var listItem = '<li id="'+player.id+'" class="list-group-item'+(idx === 0 ? ' selected':'')+'"><img src="/images/flags_iso/24/'+player.country.toLowerCase()+'.png" class="icon-sm pull-left"> <span class="teamName pull-left">'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent') + '</span> ' +player.tag+'<img src="/images/'+player.race+'.png" class="icon-sm pull-right"></li>'
                 // console.log(listItem)
                 $('ul.roster').append($(listItem));
+                });
+                $('div.roster>img.loading').remove();
             });
-            $('div.roster>img.loading').remove();
+
             snapshot($('.selected').attr('id'));
             $('li.list-group-item').click(function(e) {
 
                 if ($('.filled').length < 6) {
                     var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
                     openSlot.children('h4').text($(this).text());
-                    openSlot.click(function(e) {
-                        $(this).removeClass('filled').addClass('slot').children('h4').remove();
+
+                    $('#inputSlot'+openSlot.attr('id').slice(-1)).val($(this).attr('id'));
+
+                    $(openSlot).click(function(e) {
+                        $(this).removeClass('filled').addClass('slot').children('h4').text('');
                     });
                 }
             });
+        });
+
+        $('#createTeamForm').submit(function(e) {
+            if($('.filled').length < 6) {
+                e.preventDefault();
+            }
         });
 
         $(document).on('keydown',function(e) {
@@ -156,6 +167,17 @@ $(function(){
         });
     }
 
+    if($('ul.line-up').is('ul')) {
+        // on the account page
+        $('.playerArr').each(function(team) {
+        $.ajax({
+            method: 'get',
+            url: '/manage/pros/'+$(team).val()
+        }).done(function(data) {
+
+        });
+    });
+    }
 
 // end of document-loaded function
 });

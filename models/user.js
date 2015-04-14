@@ -27,8 +27,7 @@ module.exports = function(sequelize, DataTypes) {
           sendback(null,user);
         });
       }
-    }
-  },{
+    },
     classMethods: {
       associate: function(models) {
         // associations can be defined here
