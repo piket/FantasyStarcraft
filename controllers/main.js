@@ -82,7 +82,7 @@ router.get('/gen_tourney',function(req,res) {
                         }
                     })
                 },function(err,result) {
-                if(err) throw err;
+                    if(err) throw err;
                     tourney.roster = result.sort(function(a,b){return parseInt(a)-parseInt(b)});
                     console.log(tourney.roster);
                     tourney.save();
@@ -99,17 +99,17 @@ router.get('/test',function(req,res) {
      // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY+"&uplink__parent=43682&distance__range=1,3&limit=100"; // KeSPA 2015 Season 1
      // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY +"&uplink__parent=39565&distance__range=1,3&limit=100" // WCS 2015 Season 2
      // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY+"&uplink__parent=41322&distance__range=1,3&limit=100" // GSL 2015 Season 2
-     var url = "http://aligulac.com/api/v1/match?apikey="+process.env.ALIGULAC_KEY+"&eventobj__uplink__parent=41322&limit=0" // all matches for GSL 2015 Season 2
+     // var url = "http://aligulac.com/api/v1/match?apikey="+process.env.ALIGULAC_KEY+"&eventobj__uplink__parent=41322&limit=0" // all matches for GSL 2015 Season 2
      // var url = "http://aligulac.com/search/json?q=life" // use built-in search function
      // var url ="http://aligulac.com/api/v1/activerating/?apikey="+process.env.ALIGULAC_KEY+"&order_by=-rating" // master ranking list
-     // var url ="http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id=3"
+     var url ="http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id=3"
      // var url = "http://aligulac.com/api/v1/activerating?apikey="+process.env.ALIGULAC_KEY + "&player__id=3"//id=5308675"
      // var url = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&pla__id=3"
      // var url2 = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&plb__id=3"
      // var url = "http://aligulac.com/api/v1/event/?apikey="+process.env.ALIGULAC_KEY+"&order_by=period"
      // async.map([url,url2],function(call,callback) {
 
-     request(url,function(error,response,data){
+       request(url,function(error,response,data){
         if(!error && response.statusCode == 200) {
             console.log("Pulling data...\n");
             // callback(null,data);
@@ -123,7 +123,7 @@ router.get('/test',function(req,res) {
      // }, function(err,result) {
      //    res.send(result);
      // })
- });
+});
 
 // listing of pros with sorting and filtering options
 router.get('/pros',function(req,res) {
@@ -154,7 +154,7 @@ router.get('/tournament/:tournament',function(req,res) {
             // res.send(result);
             res.render('main/tournament',{param:req.params.tournament,name:tourney.name,start:tourney.startDate,end:tourney.endDate});
         // });
-    });
+});
     // var url = "http://wiki.teamliquid.net/starcraft2/" + req.params.tournament.replace('+','/');
 
     // request(url,function(error,response,data) {
@@ -181,7 +181,7 @@ router.get('/pull/:tournament',function(req,res) {
         request(url, function(error,response,data) {
         // async.map(tourney.roster,function(player,callback) {
             // request(url + player,function(error,response,data) {
-             if(!error && response.statusCode == 200) {
+               if(!error && response.statusCode == 200) {
                 // console.log("Pulling data for player: " + player);
                 // callback(null,JSON.parse(data).objects[0]);
                 res.send({roster:JSON.parse(data).objects});
@@ -196,7 +196,7 @@ router.get('/pull/:tournament',function(req,res) {
         //     // console.log(result);
         //     res.send({roster:result});
         // });
-    });
+});
 });
 
 // view a specific player's profile and stats
@@ -205,55 +205,96 @@ router.get('/pros/:player',function(req,res) {
 });
 
 router.get('/pros/:player/snapshot',function(req,res) {
-    var playerURL = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id="+req.params.player
-    request(playerURL,function(error,response,playerData) {
-        if(!error && response.statusCode == 200) {
-                console.log("Pulling data for player: " + req.params.player);
+    db.player.findOrCreate({where: {apiId:parseInt(req.params.player)}}).spread(function(player,created) {
+        if(created || player.updatedAt < (new Date().getTime() - (7*24*60*60*1000))){
+
+
+            var playerURL = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id="+req.params.player
+            request(playerURL,function(error,response,playerData) {
+                if(!error && response.statusCode == 200) {
+                    console.log("Pulling data for player: " + req.params.player);
                 // res.send(playerData);
                 var ratingId = JSON.parse(playerData).objects[0].current_rating.id;
 
                 request("http://aligulac.com/api/v1/activerating/?apikey="+process.env.ALIGULAC_KEY + "&id="+ratingId, function(error,response,ratingData){
                     if(!error && response.statusCode == 200) {
 
-                var id = JSON.parse(playerData).objects[0].id
-                var urls = ["http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&pla__id="+id,"http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&plb__id="+id]
+                        var id = JSON.parse(playerData).objects[0].id
+                        var urls = ["http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&pla__id="+id,"http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&plb__id="+id]
 
-                async.map(urls,function(call,callback) {
-                    request(call,function(error,response,data) {
-                     if(!error && response.statusCode == 200) {
-                        console.log("Pulling stat data:",call);
+                        async.map(urls,function(call,callback) {
+                            request(call,function(error,response,data) {
+                               if(!error && response.statusCode == 200) {
+                                console.log("Pulling stat data:",call);
 
-                        var dataArr = JSON.parse(data).objects.map(function(obj) {
-                            if (obj.pla.id == req.params.player) {
-                                return {player:obj.sca,opponent:obj.scb,matchup:obj.rca + "v" + obj.rcb};
+                                var dataArr = JSON.parse(data).objects.map(function(obj) {
+                                    if (obj.pla.id == req.params.player) {
+                                        return {player:obj.sca,opponent:obj.scb,matchup:"v" + obj.rcb};
+                                    } else {
+                                        return {player:obj.scb,opponent:obj.sca,matchup:"v" + obj.rca};
+                                    }
+                                });
+
+                                callback(null,dataArr);
                             } else {
-                                return {player:obj.scb,opponent:obj.sca,matchup:obj.rcb + "v" + obj.rca};
+                                console.log("Error:",error);
+                                res.send("Error: " + error);
                             }
                         });
+                        },function(err,result) {
+                            if (err) throw err;
+                            var flatResults = result[0].concat(result[1]);
+                            console.log("Stats loaded for:",req.params.player);
 
-                        callback(null,dataArr);
-                    } else {
-                        console.log("Error:",error);
-                        res.send("Error: " + error);
-                    }
-                    });
-                },function(err,result) {
-                    if (err) throw err;
-                    var flatResults = result[0].concat(result[1]);
-                    console.log("Stats loaded for:",req.params.player);
-                    res.send({playerData:JSON.parse(playerData).objects[0],count:flatResults.length,results:flatResults,ratingData:JSON.parse(ratingData).objects[0]});
+                            player.name = JSON.parse(playerData).objects[0].tag;
+                            player.team = JSON.parse(playerData).objects[0].current_teams.length > 0 ? JSON.parse(playerData).objects[0].current_teams[0].team.name : 'Free Agent';
+                            player.country = JSON.parse(playerData).objects[0].country;
+                            player.race = JSON.parse(playerData).objects[0].race;
+                            var stats = {
+                                vP:0, vPCount:0, vT:0, vTCount:0, vZ:0, vZCount:0, overall:0, overallCount:flatResults.length,
+                                rank:JSON.parse(ratingData).objects[0].position, vPRank:JSON.parse(ratingData).objects[0].position_vp, vTRank:JSON.parse(ratingData).objects[0].position_vt, vZRank:JSON.parse(ratingData).objects[0].position_vz
+                            }
+
+                            for (var i = 0; i < flatResults.length; i++) {
+                                switch(flatResults[i].matchup) {
+                                    case 'vP':
+                                    stats.overall += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                    stats.vP += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                    stats.vPCount++;
+                                    break;
+                                    case 'vT':
+                                    stats.overall += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                    stats.vT += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                    stats.vTCount++;
+                                    break;
+                                    case 'vZ':
+                                    stats.overall += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                    stats.vZ += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                    stats.vZCount++;
+                                    break;
+                                }
+                            }
+                            player.stats = JSON.stringify(stats);
+                            player.save();
+                            res.send(player);
+                    // res.send({playerData:JSON.parse(playerData).objects[0],count:flatResults.length,results:flatResults,ratingData:JSON.parse(ratingData).objects[0]});
                 });
-            }
-            else {
-                console.log("Error:",error);
-                res.send("Error: "+error);
-            }
-    });
-            }
-            else {
-                console.log("Error:",error);
-                res.send("Error: "+error);
-            }
+}
+else {
+    console.log("Error:",error);
+    res.send("Error: "+error);
+}
+});
+}
+else {
+    console.log("Error:",error);
+    res.send("Error: "+error);
+}
+});
+}
+else {
+    res.send(player)
+}
 });
 });
 // view a specific league you are apart of

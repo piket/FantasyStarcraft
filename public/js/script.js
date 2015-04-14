@@ -53,37 +53,39 @@ $(function(){
             method: 'get',
             url: '/pros/' + playerId + '/snapshot',
         }).done(function(data) {
-            var matchStats = {
-                vP:0, vPCount:0, vT:0, vTCount:0, vZ:0, vZCount:0, overall:0
-            }
+            // var matchStats = {
+            //     vP:0, vPCount:0, vT:0, vTCount:0, vZ:0, vZCount:0, overall:0
+            // }
 
-            for (var i = 0; i < data.results.length; i++) {
-                switch(data.results[i].matchup.slice(1)) {
-                    case 'vP':
-                        matchStats.overall += data.results[i].player > data.results[i].opponent ? 1:0;
-                        matchStats.vP += data.results[i].player > data.results[i].opponent ? 1:0;
-                        matchStats.vPCount++;
-                        break;
-                    case 'vT':
-                        matchStats.overall += data.results[i].player > data.results[i].opponent ? 1:0;
-                        matchStats.vT += data.results[i].player > data.results[i].opponent ? 1:0;
-                        matchStats.vTCount++;
-                        break;
-                    case 'vZ':
-                        matchStats.overall += data.results[i].player > data.results[i].opponent ? 1:0;
-                        matchStats.vZ += data.results[i].player > data.results[i].opponent ? 1:0;
-                        matchStats.vZCount++;
-                        break;
-                }
-            }
-            $('#overallRecord').text((matchStats.overall/data.count*100).toFixed(2) + "%");
+            // for (var i = 0; i < data.results.length; i++) {
+            //     switch(data.results[i].matchup.slice(1)) {
+            //         case 'vP':
+            //             matchStats.overall += data.results[i].player > data.results[i].opponent ? 1:0;
+            //             matchStats.vP += data.results[i].player > data.results[i].opponent ? 1:0;
+            //             matchStats.vPCount++;
+            //             break;
+            //         case 'vT':
+            //             matchStats.overall += data.results[i].player > data.results[i].opponent ? 1:0;
+            //             matchStats.vT += data.results[i].player > data.results[i].opponent ? 1:0;
+            //             matchStats.vTCount++;
+            //             break;
+            //         case 'vZ':
+            //             matchStats.overall += data.results[i].player > data.results[i].opponent ? 1:0;
+            //             matchStats.vZ += data.results[i].player > data.results[i].opponent ? 1:0;
+            //             matchStats.vZCount++;
+            //             break;
+            //     }
+            // }
+            var matchStats = JSON.parse(data.stats);
+
+            $('#overallRecord').text((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%");
             $('#vP').text((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%");
             $('#vT').text((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%");
             $('#vZ').text((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%");
-            $('#overallRank').text(data.ratingData.position);
-            $('#vPRank').text(data.ratingData.position_vp);
-            $('#vTRank').text(data.ratingData.position_vt);
-            $('#vZRank').text(data.ratingData.position_vz);
+            $('#overallRank').text(matchStats.rank);
+            $('#vPRank').text(matchStats.vPRank);
+            $('#vTRank').text(matchStats.vTRank);
+            $('#vZRank').text(matchStats.vZRank);
 
             $('div.stats>img.loading').hide();
             $('.statTable').show();

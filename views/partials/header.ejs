@@ -28,8 +28,9 @@
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><a href="/test">Tournaments</a></li>
+      <% if(user) {%>
         <li><a href="/auth/account/<%=user.id%>">Your Leagues</a></li>
+      <%}%>
       </ul>
       <ul class="nav navbar-nav navbar-right">
       <% if (user) { %>

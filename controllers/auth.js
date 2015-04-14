@@ -17,6 +17,15 @@ router.get('/account',function(req,res) {
     }
 });
 
+router.get('/account/:id',function(req,res) {
+    if(req.session.user) {
+        res.send(req.params.id);
+    }
+    else {
+        res.redirect('/');
+    }
+})
+
 router.get('/signup',function(req,res) {
     res.render('auth/signup');
 });
