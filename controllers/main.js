@@ -83,13 +83,13 @@ router.get('/gen_tourney',function(req,res) {
                     })
                 },function(err,result) {
                 if(err) throw err;
-                    console.log(result);
-                    tourney.roster = result;
+                    tourney.roster = result.sort(function(a,b){return parseInt(a)-parseInt(b)});
+                    console.log(tourney.roster);
                     tourney.save();
+                    res.send(tourney);
                 });
 
         }
-        res.send(tourney);
     })
 })
 

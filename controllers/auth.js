@@ -6,7 +6,9 @@ var router = express.Router();
 router.get('/account',function(req,res) {
     if(req.session.user) {
         db.user.find({where: {id:req.session.user.id}, include: [db.team]}).then(function(user) {
-            res.render('/auth/account',{name:user.name,teams:user.teams})
+            // res.send(user);
+            // console.log(user.teams.get());
+            res.render('auth/account',{name:user.name,teams:user.teams})
         })
         // res.render('auth/account');
     }

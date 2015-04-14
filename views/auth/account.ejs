@@ -2,15 +2,16 @@
 
 <h1 class="text-center">Your Teams</h1>
 <div class="row">
-    <% teams.forEach(team) { %>
+    <% teams.forEach(function(team) { %>
     <div class="jumbotron">
         <h2 class="text-center"><%=team.name%></h2>
         <hr>
-        <input type="hidden" class="playerArr" value="<%=team.slot1%>;<%=team.slot2%>;<%=team.slot3%>;<%=team.slot4%>;<%=team.slot5%>;<%=team.slot6%>">
-        <ul class="line-up">
-        </ul>
+        <input type="hidden" class="playerArr" value="<%=team.players[0]%>;<%=team.players[1]%>;<%=team.players[2]%>;<%=team.players[3]%>;<%=team.players[4]%>;<%=team.players[5]%>">
+        <table class="team-table line-up">
+        <tr><th>Total Points</th><th id="total"></th></tr>
+        </table>
     </div>
-    <% } %>
+    <% }) %>
 </div>
 
 <% include ../partials/footer.ejs %>

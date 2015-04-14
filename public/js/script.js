@@ -104,12 +104,14 @@ $(function(){
         $.ajax({method: 'get',url: $('#param').val()}).done(function(rosterData) {
             // console.log(rosterData.roster)
             rosterData.roster.forEach(function(player, idx) {
-                var listItem = '<li id="'+player.id+'" class="list-group-item'+(idx === 0 ? ' selected':'')+'"><img src="/images/flags_iso/24/'+player.country.toLowerCase()+'.png" class="icon-sm pull-left"> <span class="teamName pull-left">'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent') + '</span> ' +player.tag+'<img src="/images/'+player.race+'.png" class="icon-sm pull-right"></li>'
+                var listItem = '<li id="'+player.id+'" class="list-group-item'+(idx === 0 ? ' selected':'')+'"><img src="/images/flags_iso/24/'
+                    +player.country.toLowerCase()+'.png" class="icon-sm pull-left"><span class="player-tag">' +player.tag+'</span><img src="/images/'
+                        +player.race+'.png" class="icon-sm pull-right"> <span class="teamName pull-right">'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent') + '</span></li>'
                 // console.log(listItem)
                 $('ul.roster').append($(listItem));
                 });
                 $('div.roster>img.loading').remove();
-            });
+
 
             snapshot($('.selected').attr('id'));
             $('li.list-group-item').click(function(e) {
@@ -125,7 +127,7 @@ $(function(){
                     });
                 }
             });
-        });
+});
 
         $('#createTeamForm').submit(function(e) {
             if($('.filled').length < 6) {
@@ -167,14 +169,23 @@ $(function(){
         });
     }
 
-    if($('ul.line-up').is('ul')) {
+    if($('table.team-table').is('table')) {
         // on the account page
-        $('.playerArr').each(function(team) {
+        $('.playerArr').each(function() {
+            console.log("Loading:",$(this).val());
+
         $.ajax({
             method: 'get',
-            url: '/manage/pros/'+$(team).val()
+            url: '/manage/pros/'+$(this).val()
         }).done(function(data) {
+            var total = 0;
 
+            for(var player in data.scores) {
+                var playerLine = '<tr><td>'+data.scores[player].name+'</td><td class="text-center">'+data.scores[player].points+'</td></tr>';
+                $('table.team-table').append(playerLine)
+                total += data.scores[player].points;
+            }
+            $('#total').text(total);
         });
     });
     }
