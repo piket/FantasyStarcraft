@@ -22,6 +22,9 @@ app.use(express.static(__dirname+'/public'));
 app.use(function(req,res,next) {
     res.locals.user = req.session.user || false;
 
+    res.locals.lastPage = req.header('Referrer');
+    console.log(res.locals.lastPage)
+
     res.locals.alerts = req.flash();
 
     res.locals.checkDate = function(dateStr) {

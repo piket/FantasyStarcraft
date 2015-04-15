@@ -10,12 +10,29 @@ router.post('/create/team',function(req,res) {
         .spread(function(team,created) {
             if(created) {
                 db.user.find(req.session.user.id).then(function(user) {
-                    user.addTeam(team);
-                    res.redirect('/auth/account');
+                    db.league.find({where: {userId:req.session.user.id,tournamentId:req.body.tournamentId}}).then(function(league) {
+                        league.addTeam(team);
+                        user.addTeam(team);
+                        res.redirect('/auth/account');
+                    })
                 })
             }
         })
     // res.send(req.body);
+});
+
+router.post('/create/league',function(req,res) {
+    db.league.findOrCreate({where: {name:req.body.name,userId:req.session.user.id}, defaults: {name:req.body.name,endDate:req.body.endDate}}).spread(function(league,created) {
+        if(created) {
+            db.tournament.find(req.body.tournamentId).then(function(tourney) {
+                db.user.find(req.session.user.id).then(function(user) {
+                    user.addLeague(league);
+                    tourney.addLeague(league);
+                    res.redirect('/tournament/'+tourney.name.replace(/ /g,'_'));
+                })
+            });
+        }
+    });
 });
 
 router.get('/pros/:player', function(req,res) {
@@ -102,5 +119,30 @@ router.get('/pros/:player', function(req,res) {
         }
     });
 });
+
+router.get('/leagues',function(req,res) {
+    if(req.session.user) {
+        db.league.findAll({where: {userId:req.session.user.id}, include: [db.team,db.tournament,db.user]}).then(function(leagues) {
+            // res.send(leagues);
+            res.render('main/league',{leagues:leagues,url:req.protocol +'://'+req.get('host')});
+        })
+    }
+    else {
+        res.redirect(req.header('Referrer'));
+    }
+});
+
+router.put('/join',function(req,res) {
+    db.user.find(req.session.user.id).then(function(user) {
+        if(user) {
+            db.league.find(req.body.id).then(function(league) {
+                user.addLeague(league);
+            });
+        }
+        else {
+            req.flash('danger','Error: user unknown');
+        }
+    })
+})
 
 module.exports = router;

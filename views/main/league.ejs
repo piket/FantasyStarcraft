@@ -1,5 +1,24 @@
 <% include ../partials/header.ejs %>
+<% var Hashids = require('hashids');%>
+<% var hashids = new Hashids(process.env.HASH_SALT,20); %>
 
-<h1 class="text-center">League page</h1>
+<h1 class="text-center">Your Leagues</h1>
+<% for(var i = 0; i < leagues.length; i++) { %>
+<div class="row">
+    <div class="jumbotron">
+    <h2 class="text-center"><%=leagues[i].tournament.name%></h2>
+    <h3 class="text-center"><%=leagues[i].name%></h3>
+    <h3 class="text-center">Join link: <a href="<%=url+'/join/'+hashids.encode(leagues[i].id)%>"><%=url+'/join/'+hashids.encode(leagues[i].id)%></a></h3>
+    <% leagues[i].teams.forEach(function(team,count) { %>
+        <h4 class="text-center"><b><%=leagues[i].user.name%>:</b> <%=team.name%></h4>
+        <hr>
+        <input type="hidden" class="playerArr" value="<%=team.players[0]%>;<%=team.players[1]%>;<%=team.players[2]%>;<%=team.players[3]%>;<%=team.players[4]%>;<%=team.players[5]%>">
+        <table class="team-table line-up" id="<%=count%>">
+        <tr><th>Total Points</th><th class="total"></th></tr>
+        </table>
+    </div>
+    <% }) %>
+</div>
+<% } %>
 
 <% include ../partials/footer.ejs %>

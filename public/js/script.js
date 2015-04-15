@@ -173,7 +173,7 @@ $(function(){
 
     if($('table.team-table').is('table')) {
         // on the account page
-        $('.playerArr').each(function() {
+        $('.playerArr').each(function(idx) {
             console.log("Loading:",$(this).val());
 
         $.ajax({
@@ -184,13 +184,24 @@ $(function(){
 
             for(var player in data.scores) {
                 var playerLine = '<tr><td>'+data.scores[player].name+'</td><td class="text-center">'+data.scores[player].points+'</td></tr>';
-                $('table.team-table').append(playerLine)
+                $('#'+idx).append(playerLine)
                 total += data.scores[player].points;
             }
-            $('#total').text(total);
+            $('#'+idx).children().children().children('.total').text(total);
         });
     });
     }
+
+    $('#joinForm').submit(function(e) {
+        e.preventDefault();
+        $.ajax({
+            method: 'put',
+            url: $(this).attr('action'),
+            data: $(this).serialize()
+        }).done(function(response) {
+            location.href = '/manage/leagues';
+        });
+    });
 
 // end of document-loaded function
 });

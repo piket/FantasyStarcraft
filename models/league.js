@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
       associate: function(models) {
         // associations can be defined here
         models.league.hasMany(models.team);
-        models.league.belongsTo(models.user);
+        models.league.hasMany(models.user);
         models.league.belongsTo(models.tournament);
       }
     }

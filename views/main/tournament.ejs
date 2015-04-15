@@ -2,7 +2,7 @@
 
 <h1 class="text-center"><%=name%></h1>
 <hr>
-<% if(user) { %>
+<% if(user && leagues.length > 0) { %>
 <div class="row">
     <div class="col-md-2 slot" id="slot1"><h3 class="text-center">Player Slot 1</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot2"><h3 class="text-center">Player Slot 2</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot3"><h3 class="text-center">Player Slot 3</h3><h4 class="text-center"></h4></div>
     <div class="col-md-2 slot" id="slot4"><h3 class="text-center">Player Slot 4</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot5"><h3 class="text-center">Player Slot 5</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot6"><h3 class="text-center">Player Slot 6</h3><h4 class="text-center"></h4></div>
@@ -10,7 +10,7 @@
 <br>
     <form id="createTeamForm" action="/manage/create/team" method="post">
     <div class="form-group">
-        <input type="text" name="name" placeholder="Enter your team name">
+        <input type="text" name="name" placeholder="Enter your team name" class="col-md-6">
     </div>
     <input type="hidden" name="slot1" id="inputSlot1" value="">
     <input type="hidden" name="slot2" id="inputSlot2" value="">
@@ -18,9 +18,21 @@
     <input type="hidden" name="slot4" id="inputSlot4" value="">
     <input type="hidden" name="slot5" id="inputSlot5" value="">
     <input type="hidden" name="slot6" id="inputSlot6" value="">
-    <input type="submit" class="btn btn-warning btn-lg" value="Create Team">
+    <input type="hidden" name="tournamentId" value="<%=id%>">
+    <input type="submit" class="btn btn-warning btn-lg" value="Create Team" class="col-md-6">
     </form>
 <br>
+<% } else if (user) { %>
+<div class="row">
+    <form id="createLeagueForm" action="/manage/create/league" method="post">
+    <div class="form-group">
+        <input type="text" name="name" placeholder="Enter your league name" class="col-md-6">
+    </div>
+    <input type="hidden" name="endDate" value="<%=end%>">
+    <input type="hidden" name="tournamentId" value="<%=id%>">
+    <input type="submit" class="class btn btn-warning" value="Create League" class="col-md-6">
+    </form>
+</div>
 <% } %>
 <div class="row">
     <div class="col-md-6 pane roster">

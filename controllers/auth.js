@@ -1,6 +1,8 @@
 var express = require('express');
 var bcrypt = require('bcrypt');
 var db = require('../models');
+var Hashids = require('hashids');
+var hashids = new Hashids(process.env.HASH_SALT,20);
 var router = express.Router();
 
 router.get('/account',function(req,res) {
@@ -13,17 +15,21 @@ router.get('/account',function(req,res) {
         // res.render('auth/account');
     }
     else {
-        res.redirect('/');
+        res.redirect(req.header('Referrer'));
     }
 });
 
-router.get('/account/:id',function(req,res) {
-    if(req.session.user) {
-        res.send(req.params.id);
-    }
-    else {
-        res.redirect('/');
-    }
+router.get('/join/:joinId',function(req,res) {
+    db.league.find(hashids.decode(req.params.joinId)).then(function(league) {
+        if(league) {
+            res.send(league)
+            // res.render('auth/join',league)
+        }
+        else {
+            req.flash('danger','Sorry, but your join id is eiter timed out or invalid');
+            res.redirect(req.header('Referrer'))
+        }
+    })
 })
 
 router.get('/signup',function(req,res) {
@@ -40,7 +46,7 @@ router.post('/signup',function(req,res) {
     db.user.findOrCreate({where: {email:req.body.email},defaults:{email:req.body.email,name:req.body.name,password:req.body.password}}).spread(function(user,created) {
         if (created) {
             req.flash('success','New user created. Please login.')
-            res.redirect('/auth/login')
+            res.redirect(req.header('Referrer'))
         }
         else {
             req.flash('warning','There is already an account with that email address.');
@@ -80,15 +86,15 @@ router.post('/login',function(req,res) {
                         name:user.name
                     };
                     req.flash('success','You have been logged in.');
-                    res.redirect('/');
+                    res.redirect(req.header('Referrer'));
                 }else{
                     req.flash('danger','Invalid password.');
-                    res.redirect('/');
+                    res.redirect(req.header('Referrer'));
                 }
             })
         }else{
             req.flash('danger','Unknown user. Please sign up.');
-            res.redirect('/');
+            res.redirect(req.header('Referrer'));
         }
     });
 });
@@ -96,7 +102,7 @@ router.post('/login',function(req,res) {
 router.get('/logout',function(req,res){
     delete req.session.user;
     req.flash('info','You have been logged out.')
-    res.redirect('/');
+    res.redirect(req.header('Referrer'));
 });
 
 module.exports = router;

@@ -137,7 +137,7 @@ router.get('/tournament/:tournament',function(req,res) {
 
     var name = req.params.tournament.replace(/_/g,' ')
 
-    db.tournament.find({where: {name:{ilike:name}}}).then(function(tourney) {
+    db.tournament.find({where: {name:{ilike:name}}, include: [db.league]}).then(function(tourney) {
         // async.map(tourney.roster,function(player,callback) {
         //     request(url + player,function(error,response,data) {
         //      if(!error && response.statusCode == 200) {
@@ -152,7 +152,15 @@ router.get('/tournament/:tournament',function(req,res) {
         // }, function(err,result) {
         //     if (err) throw err;
             // res.send(result);
-            res.render('main/tournament',{param:req.params.tournament,name:tourney.name,start:tourney.startDate,end:tourney.endDate});
+            var userLeagues = tourney.leagues.filter(function(league) {
+                if (req.session.user && league.userId === req.session.user.id) {
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            })
+            res.render('main/tournament',{param:req.params.tournament,name:tourney.name,start:tourney.startDate,end:tourney.endDate,id:tourney.id,leagues:userLeagues});
         // });
 });
     // var url = "http://wiki.teamliquid.net/starcraft2/" + req.params.tournament.replace('+','/');
