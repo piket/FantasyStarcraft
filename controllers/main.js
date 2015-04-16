@@ -34,7 +34,7 @@ router.get('/',function(req,res) {
     // })
         db.tournament.findAll({order: '"startDate" ASC'}).then(function(tourneys) {
             // res.send(tourneys);
-            console.log(tourneys.length)
+            // console.log(tourneys.length)
             res.render('main/index',{events:tourneys});
         })
 
@@ -58,76 +58,106 @@ router.get('/',function(req,res) {
 });
 
 router.get('/gen_tourney',function(req,res) {
-    var playerRoster = [
-    // {3,5,31,45,49,76,79,109,233,279,300,309,1658,1659,1662,1709}
-    // {2,4,6,7,11,12,14,16,18,20,21,32,35,36,39,42,44,45,49,51,54,55,56,76,79,105,109,110,117,125,175,177,195,279,300,722,941,1301,1652,1659,1660,1664,1665,1709,2044,2046,2567,2568}
-    ];
-    var startDate = new Date(2015,4,8);
-    var endDate = new Date(2015,4,9);
-    db.tournament.findOrCreate({where: {name:"2015 DreamHack Open - Tours"}}).spread(function(tourney,created) {
-        if(tourney !== null) {
-            async.map(playerRoster.map(function(player) {return "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&tag="+player}),
-                function(player,callback) {
-                    request(player,function(error,response,data) {
-                        if(!error && response.statusCode == 200) {
-                            console.log("Pulling data...\n");
-                            callback(null,JSON.parse(data).objects[0].id)
-                        }
-                        else {
-                            console.log("Error:",error);
-                            callback(error);
-                        }
-                    })
-                },function(err,result) {
-                    if(err) throw err;
-                    tourney.roster = //result.sort(function(a,b){return parseInt(a)-parseInt(b)});
-                    console.log(tourney.roster);
-                    tourney.startDate = startDate;
-                    tourney.endDate = endDate;
-                    tourney.save();
-                    res.send(tourney);
-                });
-
-        }
+    var initialTourneys = [{
+        name: '2015 Global Starcraft II League Season 2',
+        roster:[2,4,6,7,11,12,14,16,18,20,21,32,35,36,39,42,44,45,49,51,54,55,56,76,79,105,109,110,117,125,175,177,195,279,300,722,941,1301,1652,1659,1660,1664,1665,1709,2044,2046,2567,2568],
+        startDate: new Date(2015,3,1),
+        endDate: new Date(2015,5,27),
+        location: 'Seoul',
+        prize: '$93,135'
+    },
+    {
+        name: '2015 WCS Season 2',
+        roster: [],
+        startDate: new Date(2015,3,16),
+        endDate: new Date(2015,5,28),
+        location: 'Cologne, Burbank, Toronto',
+        prize: '$281,000'
+    },
+    {
+        name: '2015 KeSPA Cup Season 1',
+        roster: [3,5,31,45,49,76,79,109,233,279,300,309,1658,1659,1662,1709],
+        startDate: new Date(2015,4,3),
+        endDate: new Date(2015,4,5),
+        location: 'Seoul',
+        prize: '$22,775'
+    },
+    {
+        name: '2015 DreamHack Open - Tours',
+        roster: [],
+        startDate: new Date(2015,4,8),
+        endDate: new Date(2015,4,9),
+        location: 'Tours',
+        prize: '$25,000'
+    }];
+    initialTourneys.forEach(function(tourney) {
+        db.tournament.create(tourney);
     })
+    // var playerRoster = [
+    // [3,5,31,45,49,76,79,109,233,279,300,309,1658,1659,1662,1709]
+    // [2,4,6,7,11,12,14,16,18,20,21,32,35,36,39,42,44,45,49,51,54,55,56,76,79,105,109,110,117,125,175,177,195,279,300,722,941,1301,1652,1659,1660,1664,1665,1709,2044,2046,2567,2568]
+    // ];
+    // var startDate = new Date(2015,4,8);
+    // var endDate = new Date(2015,4,9);
+    // db.tournament.findOrCreate({where: {name:"2015 DreamHack Open - Tours"}}).spread(function(tourney,created) {
+    //     if(tourney !== null) {
+    //         async.map(playerRoster.map(function(player) {return "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&tag="+player}),
+    //             function(player,callback) {
+    //                 request(player,function(error,response,data) {
+    //                     if(!error && response.statusCode == 200) {
+    //                         console.log("Pulling data...\n");
+    //                         callback(null,JSON.parse(data).objects[0].id)
+    //                     }
+    //                     else {
+    //                         console.log("Error:",error);
+    //                         callback(error);
+    //                     }
+    //                 })
+    //             },function(err,result) {
+    //                 if(err) throw err;
+    //                 tourney.roster = //result.sort(function(a,b){return parseInt(a)-parseInt(b)});
+    //                 console.log(tourney.roster);
+    //                 tourney.startDate = startDate;
+    //                 tourney.endDate = endDate;
+    //                 tourney.save();
+    //                 res.send(tourney);
+    //             });
+
+    //     }
+    // })
 })
 
-router.get('/test',function(req,res) {
-    var now = new Date();
-    var currentDate = now.getFullYear() +"-"+(now.getMonth()+1) + "-" + now.getDate();
-     // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY+"&uplink__parent=43682&distance__range=1,3&limit=100"; // KeSPA 2015 Season 1
-     // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY +"&uplink__parent=39565&distance__range=1,3&limit=100" // WCS 2015 Season 2
-     // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY+"&uplink__parent=41322&distance__range=1,3&limit=100" // GSL 2015 Season 2
-     // var url = "http://aligulac.com/api/v1/match?apikey="+process.env.ALIGULAC_KEY+"&eventobj__uplink__parent=41322&limit=0" // all matches for GSL 2015 Season 2
-     // var url = "http://aligulac.com/search/json?q=life" // use built-in search function
-     // var url ="http://aligulac.com/api/v1/activerating/?apikey="+process.env.ALIGULAC_KEY+"&order_by=-rating" // master ranking list
-     var url ="http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id=3"
-     // var url = "http://aligulac.com/api/v1/activerating?apikey="+process.env.ALIGULAC_KEY + "&player__id=3"//id=5308675"
-     // var url = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&pla__id=3"
-     // var url2 = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&plb__id=3"
-     // var url = "http://aligulac.com/api/v1/event/?apikey="+process.env.ALIGULAC_KEY+"&order_by=period"
-     // async.map([url,url2],function(call,callback) {
+// router.get('/test',function(req,res) {
+//     var now = new Date();
+//     var currentDate = now.getFullYear() +"-"+(now.getMonth()+1) + "-" + now.getDate();
+//      // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY+"&uplink__parent=43682&distance__range=1,3&limit=100"; // KeSPA 2015 Season 1
+//      // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY +"&uplink__parent=39565&distance__range=1,3&limit=100" // WCS 2015 Season 2
+//      // var url = "http://aligulac.com/api/v1/event?apikey="+process.env.ALIGULAC_KEY+"&uplink__parent=41322&distance__range=1,3&limit=100" // GSL 2015 Season 2
+//      // var url = "http://aligulac.com/api/v1/match?apikey="+process.env.ALIGULAC_KEY+"&eventobj__uplink__parent=41322&limit=0" // all matches for GSL 2015 Season 2
+//      // var url = "http://aligulac.com/search/json?q=life" // use built-in search function
+//      // var url ="http://aligulac.com/api/v1/activerating/?apikey="+process.env.ALIGULAC_KEY+"&order_by=-rating" // master ranking list
+//      var url ="http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id=3"
+//      // var url = "http://aligulac.com/api/v1/activerating?apikey="+process.env.ALIGULAC_KEY + "&player__id=3"//id=5308675"
+//      // var url = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&pla__id=3"
+//      // var url2 = "http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&plb__id=3"
+//      // var url = "http://aligulac.com/api/v1/event/?apikey="+process.env.ALIGULAC_KEY+"&order_by=period"
+//      // async.map([url,url2],function(call,callback) {
 
-       request(url,function(error,response,data){
-        if(!error && response.statusCode == 200) {
-            console.log("Pulling data...\n");
-            // callback(null,data);
-            res.send(data);
-        }
-        else {
-            console.log("Error:",error);
-            // callback(error);
-        }
-    });
-     // }, function(err,result) {
-     //    res.send(result);
-     // })
-});
-
-// listing of pros with sorting and filtering options
-router.get('/pros',function(req,res) {
-    res.send("pro rankings");
-});
+//        request(url,function(error,response,data){
+//         if(!error && response.statusCode == 200) {
+//             console.log("Pulling data...\n");
+//             // callback(null,data);
+//             res.send(data);
+//         }
+//         else {
+//             console.log("Error:",error);
+//             // callback(error);
+//         }
+//     });
+//      // }, function(err,result) {
+//      //    res.send(result);
+//      // })
+// });
 
 // view a specific tournament's details and roster
 router.get('/tournament/:tournament',function(req,res) {
