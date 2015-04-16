@@ -55,8 +55,8 @@ router.post('/create/league',function(req,res) {
 router.get('/pros/:player', function(req,res) {
     var players = req.params.player.split(';');
     console.log("/manage/pros/ called");
-    var playersURL ="http://aligulac.com/api/v1/player/set/"+req.params.player+"?apikey="+process.env.ALIGULAC_KEY
-    var url = "http://aligulac.com/api/v1/match?apikey="+process.env.ALIGULAC_KEY+"&eventobj__uplink__parent=41322&limit=0"
+    var playersURL ="http://aligulac.com/api/v1/player/set/"+req.params.player+"?apikey="+'pEtSegtDJUOLseef32gl'
+    var url = "http://aligulac.com/api/v1/match?apikey="+'pEtSegtDJUOLseef32gl'+"&eventobj__uplink__parent=41322&limit=0"
     request(url,function(error,response,data) {
         if(!error && response.statusCode == 200) {
             var matches = JSON.parse(data).objects
