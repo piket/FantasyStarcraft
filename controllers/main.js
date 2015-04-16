@@ -59,6 +59,8 @@ router.get('/',function(req,res) {
 
 router.get('/gen_tourney',function(req,res) {
     var playerRoster = [
+    // {3,5,31,45,49,76,79,109,233,279,300,309,1658,1659,1662,1709}
+    // {2,4,6,7,11,12,14,16,18,20,21,32,35,36,39,42,44,45,49,51,54,55,56,76,79,105,109,110,117,125,175,177,195,279,300,722,941,1301,1652,1659,1660,1664,1665,1709,2044,2046,2567,2568}
     ];
     var startDate = new Date(2015,4,8);
     var endDate = new Date(2015,4,9);
@@ -78,7 +80,7 @@ router.get('/gen_tourney',function(req,res) {
                     })
                 },function(err,result) {
                     if(err) throw err;
-                    tourney.roster = result.sort(function(a,b){return parseInt(a)-parseInt(b)});
+                    tourney.roster = //result.sort(function(a,b){return parseInt(a)-parseInt(b)});
                     console.log(tourney.roster);
                     tourney.startDate = startDate;
                     tourney.endDate = endDate;
@@ -228,7 +230,7 @@ router.get('/pros/:player/snapshot',function(req,res) {
                     if(!error && response.statusCode == 200) {
 
                         var id = JSON.parse(playerData).objects[0].id
-                        var urls = ["http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&pla__id="+id,"http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&plb__id="+id]
+                        var urls = ["http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=0&pla__id="+id,"http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&plb__id="+id]
 
                         async.map(urls,function(call,callback) {
                             request(call,function(error,response,data) {

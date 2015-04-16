@@ -108,7 +108,8 @@ if($('ul.roster').is('ul')) {
             rosterData.roster.forEach(function(player, idx) {
                 var listItem = '<li id="'+player.id+'" class="list-group-item'+(idx === 0 ? ' selected':'')+'"><img src="/images/flags_iso/24/'
                 +player.country.toLowerCase()+'.png" class="icon-sm pull-left"><span class="player-tag">' +player.tag+'</span><img src="/images/'
-                +player.race+'.png" class="icon-sm race-icon"> <span class="teamName">'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent') +'</span>';
+                +player.race+'.png" class="icon-sm race-icon"> <img class="teamName icon-lg" title="'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent')
+                +'" src="/images/teams/'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent') +'.png">';
 
                 if ($('#login').is('a')) {
                     listItem += '</li>';
