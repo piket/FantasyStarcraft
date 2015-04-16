@@ -104,7 +104,7 @@ $(function(){
 if($('ul.roster').is('ul')) {
     $('div.roster>img.loading').show()
     $.ajax({method: 'get',url: $('#param').val()}).done(function(rosterData) {
-            // console.log(rosterData.roster)
+            console.log(rosterData.roster)
             rosterData.roster.forEach(function(player, idx) {
                 var listItem = '<li id="'+player.id+'" class="list-group-item'+(idx === 0 ? ' selected':'')+'"><img src="/images/flags_iso/24/'
                 +player.country.toLowerCase()+'.png" class="icon-sm pull-left"><span class="player-tag">' +player.tag+'</span><img src="/images/'
