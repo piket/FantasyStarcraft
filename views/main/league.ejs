@@ -20,11 +20,11 @@
         <tr><th>Player</th><th>Wins</th><th>Loses</th><th>Streaks</th><th>Points</th></tr>
         <tr id="loader<%=count%>"><td colspan="5" class="loading-horizontal"><img class="loading-horizontal" src="/images/ajax-loader-horizontal.gif"></td></tr>
         </table>
-    </div>
     <% }) %>
     <% if(noTeam) { %>
     <a href="/tournament/<%=leagues[i].tournament.name.replace(/ /g,'_')%>" class="btn btn-warning center-block">Create a Team for <em><%=leagues[i].name%></em></a>
     <% } %>
+    </div>
 </div>
 <% } %>
 <% } %>

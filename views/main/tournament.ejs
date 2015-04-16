@@ -44,18 +44,18 @@
     <input type="submit" class="btn btn-warning btn-lg center-block" value="Create Team">
     </form>
 <br>
-
 <% }} else if (user) { %>
 <div class="row">
     <form id="createLeagueForm" action="/manage/create/league" method="post">
-    <div class="form-group">
-        <input type="text" name="name" placeholder="Enter your league name" class="col-md-6 form-control">
+    <div class="col-md-6 form-group">
+        <input type="text" name="name" placeholder="Enter your league name" class="form-control">
     </div>
     <input type="hidden" name="endDate" value="<%=end%>">
     <input type="hidden" name="tournamentId" value="<%=id%>">
-        <input type="submit" class="class btn btn-warning center-block" value="Create League">
+        <input type="submit" class="col-md6 btn btn-warning center-block" value="Create League">
     </form>
 </div>
+<hr>
 <% } %>
 <div class="row">
     <div class="col-md-6 pane roster">

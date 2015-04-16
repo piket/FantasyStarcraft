@@ -9,6 +9,7 @@
         <% } %>
         <% leagues.forEach(function(league) { %>
      <a href="/tournament/<%=league.tournament.name.replace(/ /g,'_')%>" class="btn btn-warning center-block">Create a Team for <em><%=league.name%></em></a>
+     <br><br>
             <% }) %>
     <% } %>
     <% teams.forEach(function(team,count) { %>
