@@ -3,31 +3,33 @@
 <h1 class="text-center">Welcome to Fantasy Starcraft 2</h1>
 
 <div class="row">
-<% for(var i = events.length - 1; i > 1; i--) { %>
-    <% if(checkDate(events[i][1]) && events[i][2].href.indexOf('redlink=1') === -1) { %>
-    <div class="jumbotron col-md-6 col-md-offset-3">
+<% for(var i = 0; i < events.length; i++) { %>
+    <% if (new Date(events[i].endDate) > new Date()) { %>
+    <div class="jumbotron tourney-list col-md-6 col-md-offset-3">
         <div class="row">
-            <h3 class="text-center"><%=events[i][2].text%></h3>
-            <h4 class="text-center"><%=events[i][0].replace('&#xA0;',' ') + ' - ' + events[i][1].replace('&#xA0;',' ')%></h4>
+            <h3 class="text-center"><%=events[i].name%></h3>
+            <h4 class="text-center"><%=printDate(events[i].startDate) + ' - ' + printDate(events[i].endDate)%></h4>
             <div class="row">
                 <div class="col-md-4">
-                    <h5><b>Location:</b> <%=events[i][6]%></h5>
+                    <h5><b>Location:</b> <%=events[i].location%></h5>
                 </div>
                 <div class="col-md-4">
-                    <h5><b>Prize Pool:</b> <%=events[i][4]%></h5>
+                    <h5><b>Prize Pool:</b> <%=events[i].prize%></h5>
                 </div>
                 <div class="col-md-4">
-                    <h5><b>Players:</b> <%=events[i][5]%></h5>
+                    <h5><b>Players:</b> <%=events[i].roster.length > 0 ? events[i].roster.length : 'Unknown'%></h5>
                 </div>
             </div>
             <div class="row">
-                <div class="col-md-4 col-md-offset-4">
-                    <a href="/tournament/<%=events[i][2].href%>" class="btn btn-warning bottomBtn btn-sm">Expanded View</a>
-                </div>
+                <% if(events[i].roster.length > 0) { %>
+                    <a href="/tournament/<%=events[i].name.replace(/ /g,'_')%>" class="btn btn-warning bottomBtn btn-sm center-block">View Roster and Create League/Team</a>
+                <% } else { %>
+                    <a href='#' class="btn btn-default bottomBtn btn-sm center-block disabled">No Roster Avaliable</a>
+                <% } %>
             </div>
         </div>
     </div>
-<% } %>
+    <% } %>
 <% } %>
 </div>
 

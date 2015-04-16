@@ -35,6 +35,7 @@
       <ul class="nav navbar-nav navbar-right">
       <% if (user) { %>
         <li><a href="/auth/account">Welcome <%=user.name%></a></li>
+        <li><a href="/auth/logout">Logout</a></li>
       <% } else { %>
         <li><a href="#" id="login" class="authBtn">Login</a></li>
         <li><a href="/auth/signup" class="authBtn">Signup</a></li>

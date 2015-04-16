@@ -29,6 +29,11 @@ hr {
 
 h1,h2 {
     font-family: 'starcraftnormal';
+    margin-bottom: 30px;
+}
+
+.star-font {
+    font-family: 'starcraftnormal';
 }
 
 p.footer-text {
@@ -53,7 +58,11 @@ input {
 
 .jumbotron {
     background-color: rgba(0,51,102,0.75);
+    border-radius: 20px;
     position: relative;
+}
+
+.tourney-list {
     padding-bottom: 0;
 }
 
@@ -101,6 +110,7 @@ ul.roster>li.list-group-item {
     background-color: rgba(0,51,102,0.5);
     border-color: rgba(0,51,102,0.5);
     color: rgba(255,255,255,1);
+    position: relative;
 }
 
 ul.roster>li.selected {
@@ -145,8 +155,8 @@ img.loading {
 }
 
 span.teamName {
-    padding-left: 5px;
-    padding-right: 20px;
+    position: absolute;
+    right: 100px;
 }
 
 span.player-tag {
@@ -167,4 +177,70 @@ input[type=text] {
 .line-up {
     background-color: white;
     color: black;
+}
+
+button.add-btn {
+    position: absolute;
+    right: 5px;
+    top: 6px;
+    margin-left: 20px;
+    background-color: rgba(255,255,255,1);
+    color: rgba(0,51,102,1);
+}
+
+button.add-btn:hover {
+    border-color: rgba(255,255,255,1);
+    background-color: rgba(255,255,255,1);
+    color: rgba(0,153,0,1);
+}
+
+button.add-btn:focus {
+    border-color: rgba(255,255,255,1);
+    background-color: rgba(255,255,255,1);
+    color: rgba(0,51,102,1);
+}
+
+button.remove-btn {
+    position: absolute;
+    right: 5px;
+    top: 6px;
+    margin-left: 20px;
+    border-color: rgba(255,255,255,1);
+    background-color: rgba(255,255,255,1);
+    color: rgba(0,153,0,1);
+}
+
+button.remove-btn:hover {
+    border-color: rgba(255,255,255,1);
+    background-color: rgba(255,255,255,1);
+    color: rgba(153,0,0,1);
+}
+
+button.remove-btn:focus {
+    border-color: rgba(255,255,255,1);
+    background-color: rgba(255,255,255,1);
+    color: rgba(0,153,0,1);
+}
+
+.glyphicon {
+    font-size: 150%;
+    padding-top: 2px;
+}
+
+.race-icon {
+    position: absolute;
+    top: 5px;
+    right: 50px;
+}
+
+.team-table {
+    font-size: 16pt;
+}
+
+th {
+    font-size: 20pt;
+}
+
+th.header {
+    text-align: center;
 }

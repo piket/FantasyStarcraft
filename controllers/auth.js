@@ -19,19 +19,6 @@ router.get('/account',function(req,res) {
     }
 });
 
-router.get('/join/:joinId',function(req,res) {
-    db.league.find(hashids.decode(req.params.joinId)).then(function(league) {
-        if(league) {
-            res.send(league)
-            // res.render('auth/join',league)
-        }
-        else {
-            req.flash('danger','Sorry, but your join id is eiter timed out or invalid');
-            res.redirect(req.header('Referrer'))
-        }
-    })
-})
-
 router.get('/signup',function(req,res) {
     res.render('auth/signup');
 });
@@ -46,7 +33,7 @@ router.post('/signup',function(req,res) {
     db.user.findOrCreate({where: {email:req.body.email},defaults:{email:req.body.email,name:req.body.name,password:req.body.password}}).spread(function(user,created) {
         if (created) {
             req.flash('success','New user created. Please login.')
-            res.redirect(req.header('Referrer'))
+            res.redirect('/')
         }
         else {
             req.flash('warning','There is already an account with that email address.');
@@ -102,7 +89,7 @@ router.post('/login',function(req,res) {
 router.get('/logout',function(req,res){
     delete req.session.user;
     req.flash('info','You have been logged out.')
-    res.redirect(req.header('Referrer'));
+    res.redirect('/');
 });
 
 module.exports = router;

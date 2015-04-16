@@ -27,58 +27,56 @@ app.use(function(req,res,next) {
 
     res.locals.alerts = req.flash();
 
-    res.locals.checkDate = function(dateStr) {
-        console.log(dateStr)
-        var date = new Date();
-        var month = dateStr.slice(0,3);
-        var m = -2;
-
-        switch (month) {
-            case 'Jan':
-                m = 0;
+    res.locals.printDate = function(date) {
+        var str = "";
+        switch(date.getMonth()) {
+            case 0:
+                str = "Jan ";
                 break;
-            case 'Feb':
-                m = 1;
+            case 1:
+                str = "Feb ";
                 break;
-            case 'Mar':
-                m = 2;
+            case 2:
+                str = "Mar ";
                 break;
-            case 'Apr':
-                m = 3;
+            case 3:
+                str = "Apr ";
                 break;
-            case 'May':
-                m = 4;
+            case 4:
+                str = "May ";
                 break;
-            case 'Jun':
-                m = 5;
+            case 5:
+                str = "Jun ";
                 break;
-            case 'Jul':
-                m = 6;
+            case 6:
+                str = "Jul ";
                 break;
-            case 'Aug':
-                m = 7;
+            case 7:
+                str = "Aug ";
                 break;
-            case 'Sep':
-                m = 8;
+            case 8:
+                str = "Sep ";
                 break;
-            case 'Oct':
-                m = 9;
+            case 9:
+                str = "Oct ";
                 break;
-            case 'Nov':
-                m = 10;
+            case 10:
+                str = "Nov ";
                 break;
-            case 'Dec':
-                m = 11;
+            case 11:
+                str = "Dec ";
                 break;
             default:
-                m = -1;
+                str = "??? ";
                 break;
         }
-
-        if (m <= date.getMonth()) return false;
-        if (parseInt(dateStr.slice(4)) <= date.getDate() && m === date.getMonth()) return false;
-
-        return true;
+        if (date.getDate() < 10) {
+            str += "0"+date.getDate();
+        }
+        else {
+            str += date.getDate();
+        }
+        return str;
     }
 
     next();

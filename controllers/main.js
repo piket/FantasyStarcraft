@@ -7,31 +7,36 @@ var router = express.Router();
 
 // main page, lists upcoming tournaments
 router.get('/',function(req,res) {
-    var url = "http://wiki.teamliquid.net/starcraft2/Premier_Tournaments"
-    request(url,function(error,response,data) {
-        if(!error && response.statusCode == 200) {
-            console.log("Pulling data...");
-            var $ = cheerio.load(data);
-            var events = $('h3').first().next('table').children('tr').map(function(idx,row) {
-                return new Array($(row).children().map(function(i,item) {
-                    if($(item).children('span').text() !== "") {
-                        // return $(item).html();
-                        return new $(item).html().slice($(item).html().indexOf('</span>')+7).trim();
-                    }
-                    else if (i == 2 && idx !== 0) {
-                        return {text:$(item).text().trim(),href:$(item).children().attr('href').slice(12).replace('/','+')};
-                    }
-                    return $(item).text().trim();
-                }).get());
-            }).get();
+    // var url = "http://wiki.teamliquid.net/starcraft2/Premier_Tournaments"
+    // request(url,function(error,response,data) {
+    //     if(!error && response.statusCode == 200) {
+    //         console.log("Pulling data...");
+    //         var $ = cheerio.load(data);
+    //         var events = $('h3').first().next('table').children('tr').map(function(idx,row) {
+    //             return new Array($(row).children().map(function(i,item) {
+    //                 if($(item).children('span').text() !== "") {
+    //                     // return $(item).html();
+    //                     return new $(item).html().slice($(item).html().indexOf('</span>')+7).trim();
+    //                 }
+    //                 else if (i == 2 && idx !== 0) {
+    //                     return {text:$(item).text().trim(),href:$(item).children().attr('href').slice(12).replace('/','+')};
+    //                 }
+    //                 return $(item).text().trim();
+    //             }).get());
+    //         }).get();
             // res.send(events);
-            res.render('main/index',{events:events});
-        }
-        else {
-            console.log("Error:",error);
-            res.send("Error: " + error);
-        }
-    })
+            // res.render('main/index',{events:events});
+        // }
+        // else {
+        //     console.log("Error:",error);
+        //     res.send("Error: " + error);
+        // }
+    // })
+        db.tournament.findAll({order: '"startDate" ASC'}).then(function(tourneys) {
+            // res.send(tourneys);
+            console.log(tourneys.length)
+            res.render('main/index',{events:tourneys});
+        })
 
     // var now = new Date();
     // var currentDate = now.getFullYear() +"-"+(now.getMonth()+1) + "-" + now.getDate();
@@ -54,20 +59,10 @@ router.get('/',function(req,res) {
 
 router.get('/gen_tourney',function(req,res) {
     var playerRoster = [
-    "San", "Panic", "YongHwa", 'First', 'Seed', 'Dear', 'Super', 'Terminator', 'Rain', 'MC', 'FanTaSy', 'MarineKing', 'GuMiho', 'Bomber', 'Hack', 'TaeJa', 'Heart',
-    'YoDa', 'Dream', 'Maru', 'PenguiN', 'Curious', 'Dark', 'Soulkey', 'Pigbaby', 'Bbyong'  , 'Impact',
-    'Trap',  'SuperNova'   ,  'Sacsri',
-    'MyuNgSiK',    'Sorry',   'Shine',
-    'Trust'   ,'Flash' , 'Symbol',
-    'Patience',  'Ryung',  'RagnaroK',
-    'sOs' ,  'Cure', 'ByuL',
-    'Creator',     'BrAvO',  'soO',
-    'HerO'  ,   'DongRaeGu',
-    'Billowy'
     ];
-    var startDate = new Date(2015,3,1);
-    var endDate = new Date(2015,5,27);
-    db.tournament.find({where: {name:"2015 Global Starcraft II League Season 2"}}).then(function(tourney) {
+    var startDate = new Date(2015,4,8);
+    var endDate = new Date(2015,4,9);
+    db.tournament.findOrCreate({where: {name:"2015 DreamHack Open - Tours"}}).spread(function(tourney,created) {
         if(tourney !== null) {
             async.map(playerRoster.map(function(player) {return "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&tag="+player}),
                 function(player,callback) {
@@ -85,6 +80,8 @@ router.get('/gen_tourney',function(req,res) {
                     if(err) throw err;
                     tourney.roster = result.sort(function(a,b){return parseInt(a)-parseInt(b)});
                     console.log(tourney.roster);
+                    tourney.startDate = startDate;
+                    tourney.endDate = endDate;
                     tourney.save();
                     res.send(tourney);
                 });
@@ -137,7 +134,7 @@ router.get('/tournament/:tournament',function(req,res) {
 
     var name = req.params.tournament.replace(/_/g,' ')
 
-    db.tournament.find({where: {name:{ilike:name}}, include: [db.league]}).then(function(tourney) {
+    db.tournament.find({where: {name:{ilike:name}}, include: [{model:db.league,include: [db.user]}]}).then(function(tourney) {
         // async.map(tourney.roster,function(player,callback) {
         //     request(url + player,function(error,response,data) {
         //      if(!error && response.statusCode == 200) {
@@ -152,14 +149,17 @@ router.get('/tournament/:tournament',function(req,res) {
         // }, function(err,result) {
         //     if (err) throw err;
             // res.send(result);
+            if(req.session.user) {
             var userLeagues = tourney.leagues.filter(function(league) {
-                if (req.session.user && league.userId === req.session.user.id) {
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            })
+                for(var i = 0; i < league.users.length; i++) {
+                    if(league.users[i].id === req.session.user.id) return true;
+                };
+                return false;
+                });
+            }
+            else {
+                var userLeagues = [];
+            }
             res.render('main/tournament',{param:req.params.tournament,name:tourney.name,start:tourney.startDate,end:tourney.endDate,id:tourney.id,leagues:userLeagues});
         // });
 });
@@ -192,7 +192,7 @@ router.get('/pull/:tournament',function(req,res) {
                if(!error && response.statusCode == 200) {
                 // console.log("Pulling data for player: " + player);
                 // callback(null,JSON.parse(data).objects[0]);
-                res.send({roster:JSON.parse(data).objects});
+                res.send({roster:JSON.parse(data).objects.sort(function(a,b) {return a.tag > b.tag ? 1:-1})});
             }
             else {
                 console.log("Error:",error);
@@ -254,13 +254,15 @@ router.get('/pros/:player/snapshot',function(req,res) {
                             var flatResults = result[0].concat(result[1]);
                             console.log("Stats loaded for:",req.params.player);
 
+                            var ratings = JSON.parse(ratingData).objects[0] || {position:'N/A',position_vp:'N/A',position_vt:'N/A',position_vz:'N/A'};
+
                             player.name = JSON.parse(playerData).objects[0].tag;
                             player.team = JSON.parse(playerData).objects[0].current_teams.length > 0 ? JSON.parse(playerData).objects[0].current_teams[0].team.name : 'Free Agent';
                             player.country = JSON.parse(playerData).objects[0].country;
                             player.race = JSON.parse(playerData).objects[0].race;
                             var stats = {
-                                vP:0, vPCount:0, vT:0, vTCount:0, vZ:0, vZCount:0, overall:0, overallCount:flatResults.length,
-                                rank:JSON.parse(ratingData).objects[0].position, vPRank:JSON.parse(ratingData).objects[0].position_vp, vTRank:JSON.parse(ratingData).objects[0].position_vt, vZRank:JSON.parse(ratingData).objects[0].position_vz
+                                vP:0, vPCount:0, vT:0, vTCount:0, vZ:0, vZCount:0, overall:0, overallCount:flatResults.length, rating:(ratings.position === 'N/A' ? false:true),
+                                rank:ratings.position, vPRank:ratings.position_vp, vTRank:ratings.position_vt, vZRank:ratings.position_vz
                             }
 
                             for (var i = 0; i < flatResults.length; i++) {

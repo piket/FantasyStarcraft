@@ -2,6 +2,8 @@ var express = require('express');
 var db = require('../models');
 var router = express.Router();
 var request = require('request');
+var Hashids = require('hashids');
+var hashids = new Hashids(process.env.HASH_SALT,20);
 
 router.post('/create/team',function(req,res) {
     // db call to create your team
@@ -9,20 +11,31 @@ router.post('/create/team',function(req,res) {
     db.team.findOrCreate({where: {name:req.body.name,userId:req.session.user.id}, defaults: {name:req.body.name,players:players}})
         .spread(function(team,created) {
             if(created) {
-                db.user.find(req.session.user.id).then(function(user) {
-                    db.league.find({where: {userId:req.session.user.id,tournamentId:req.body.tournamentId}}).then(function(league) {
-                        league.addTeam(team);
-                        user.addTeam(team);
+                console.log("Team created");
+                db.user.find(req.session.user.id).then(function(thisUser) {
+                    db.league.findAll({include: [db.user], where: {tournamentId:req.body.tournamentId}}).then(function(leagues) {
+                        leagues.forEach(function(league) {
+                            for (var i = 0; i < league.users.length; i++) {
+                                if(league.users[i].id === req.session.user.id) {
+                                    league.addTeam(team);
+                                    thisUser.addTeam(team);
+                                    return;
+                                }
+                            }
+                        })
                         res.redirect('/auth/account');
                     })
                 })
+            } else {
+                req.flash('danger','You already have a team in this league');
+                res.redirect(req.header('Referrer'));
             }
         })
     // res.send(req.body);
 });
 
 router.post('/create/league',function(req,res) {
-    db.league.findOrCreate({where: {name:req.body.name,userId:req.session.user.id}, defaults: {name:req.body.name,endDate:req.body.endDate}}).spread(function(league,created) {
+    db.league.findOrCreate({where: {name:req.body.name}, defaults: {name:req.body.name,endDate:req.body.endDate}}).spread(function(league,created) {
         if(created) {
             db.tournament.find(req.body.tournamentId).then(function(tourney) {
                 db.user.find(req.session.user.id).then(function(user) {
@@ -31,6 +44,10 @@ router.post('/create/league',function(req,res) {
                     res.redirect('/tournament/'+tourney.name.replace(/ /g,'_'));
                 })
             });
+        }
+        else {
+            req.flash('danger','A league with that name already exists, please choose a new name');
+            res.redirect(req.header('Referrer'));
         }
     });
 });
@@ -62,7 +79,8 @@ router.get('/pros/:player', function(req,res) {
             var scores = {};
             players.forEach(function(player) {
                 var id = parseInt(player);
-                var tally = details.reduce(function(prev,current){
+                var record = {wins:0,loses:0,streaks:0}
+                record.points = details.reduce(function(prev,current){
                     if(current.idA === id) {
                         var p = current.score[0];
                         var o = current.score[1];
@@ -78,29 +96,47 @@ router.get('/pros/:player', function(req,res) {
                     switch(true) {
                         case (p+o) <= 5 && (p+o) >= 3:
                             if(o === 0) {
+                                record.streaks++;
+                                record.wins+=p;
                                 return prev + (p*2) + 1;
                             }
+                            record.wins+=p;
+                            record.loses+=o;
                             return prev + (p*2) - o;
                         case (p+o) <=7 && (p+o) >= 4:
                             if(o === 0) {
+                                record.streaks++;
+                                record.wins+=p;
                                 return prev + (p*2) + 2;
                             }
+                            record.wins+=p;
+                            record.loses+=o;
                             return prev + (p*2) - o;
                         case (p+o) <= 11 && (p+o) >= 5:
                             if (o === 0) {
+                                record.streaks++;
+                                record.wins+=p;
                                 return prev + (p*2) + 3;
                             }
+                            record.wins+=p;
+                            record.loses+=o;
                             return prev + (p*2) - o;
                         case (p+o) > 11:
                             if (o === 0) {
+                                record.streaks++;
+                                record.wins+=p;
                                 return prev + (p*2) + 3;
                             }
+                            record.wins+=p;
+                            record.loses+=o;
                             return prev + (p*2) - o;
                         default:
+                            record.wins+=p;
+                            record.loses+=o;
                             return prev + (p*2) - o;
                     }
                 },0);
-                scores[id] = {points:tally};
+                scores[id] = record;
             });
 
             request(playersURL,function(error,response,playerData) {
@@ -122,9 +158,26 @@ router.get('/pros/:player', function(req,res) {
 
 router.get('/leagues',function(req,res) {
     if(req.session.user) {
-        db.league.findAll({where: {userId:req.session.user.id}, include: [db.team,db.tournament,db.user]}).then(function(leagues) {
+        db.league.findAll({include: [db.user,db.team,db.tournament]}).then(function(leagues){
+        // db.user.find({where: {id:req.session.user.id}, include: [{model:db.league,include: [db.tournament,{model:db.team, include:[db.user]}]}]}).then(function(user) {
             // res.send(leagues);
-            res.render('main/league',{leagues:leagues,url:req.protocol +'://'+req.get('host')});
+            // res.send(user);
+            var renderObj = {
+                leagues: leagues,
+                findUser: function(userArr,id) {
+                    for(var i = 0; i < userArr.length; i++) {
+                        if (userArr[i].id === id) {
+                            return userArr[i].name;
+                        }
+                    }
+                    return false;
+                },
+                encode: function(id) {
+                    return hashids.encode(id);
+                },
+                url: req.protocol +'://'+req.get('host')
+            }
+            res.render('main/league',renderObj);
         })
     }
     else {
@@ -132,15 +185,42 @@ router.get('/leagues',function(req,res) {
     }
 });
 
+router.get('/join/:id',function(req,res) {
+    var id = hashids.decode(req.params.id);
+
+    db.league.find(id).then(function(league) {
+        res.render('auth/join',{id:id,name:league.name});
+    })
+})
+
 router.put('/join',function(req,res) {
-    db.user.find(req.session.user.id).then(function(user) {
+
+    db.user.find({where: {id:req.session.user.id}, include:[db.league]}).then(function(user) {
+        // user.leagues.forEach(function(league) {
+
+        // })
         if(user) {
-            db.league.find(req.body.id).then(function(league) {
-                user.addLeague(league);
+            db.league.find({where: {id:req.body.id}, include: [db.user]}).then(function(league) {
+                    var flag = false;
+
+                    for(var i = 0; i < league.users.length; i++) {
+                        if (league.users[i].id === req.session.user.id) {
+                            flag = true;
+                        }
+                    }
+
+                    if(flag) {
+                        req.flash('danger','You are already a member of this league.')
+                    } else {
+                        user.addLeague(league);
+                        req.flash('success','Congratualtions, you have joined '+league.name);
+                    }
+                    res.send(flag);
             });
         }
         else {
             req.flash('danger','Error: user unknown');
+            res.send(false);
         }
     })
 })

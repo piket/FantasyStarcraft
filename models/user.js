@@ -32,7 +32,7 @@ module.exports = function(sequelize, DataTypes) {
       associate: function(models) {
         // associations can be defined here
         models.user.hasMany(models.team);
-        models.user.hasMany(models.league);
+        models.user.belongsToMany(models.league, {through: models.leaguesusers, foreignKey: 'userId'});
       }
     }
   });
