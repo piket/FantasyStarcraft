@@ -3,15 +3,37 @@
 <h1 class="text-center"><%=name%></h1>
 <hr>
 <% if(user && leagues.length > 0) { %>
-<div class="row">
-    <div class="col-md-2 slot" id="slot1"><h3 class="text-center">Player Slot 1</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot2"><h3 class="text-center">Player Slot 2</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot3"><h3 class="text-center">Player Slot 3</h3><h4 class="text-center"></h4></div>
-    <div class="col-md-2 slot" id="slot4"><h3 class="text-center">Player Slot 4</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot5"><h3 class="text-center">Player Slot 5</h3><h4 class="text-center"></h4></div><div class="col-md-2 slot" id="slot6"><h3 class="text-center">Player Slot 6</h3><h4 class="text-center"></h4></div>
-</div>
-<br>
+    <% var noTeams = leagues.filter(function(league) { %>
+        <% for(var i = 0; i < league.teams.length; i++) { %>
+            <% if (league.teams[i].userId === user.id) return false; %>
+        <% } %>
+        <% return true %>
+    <% }) %>
+    <% if (noTeams.length > 0) { %>
     <form id="createTeamForm" action="/manage/create/team" method="post">
     <div class="form-group">
-        <input type="text" name="name" placeholder="Enter your team name" class="col-md-6">
+        <div class="row">
+        <div class=" col-md-8 col-md-offset-2">
+        <div class="row">
+            <div class="col-md-6">
+        <input type="text" name="name" placeholder="Enter your team name" class="form-control">
+            </div>
+            <div class="col-md-6">
+        <select class="form-control" name="id">
+            <% noTeams.forEach(function(league,idx){ %>
+                <option <%=(idx === 0 ? 'class="selected"':'')%> value="<%=league.id%>"><%=league.name%></option>
+            <% }) %>
+        </select>
+            </div>
+        </div>
+        </div>
+        </div>
     </div>
+<div class="row">
+    <div class="col-md-2 slot" id="slot1"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot2"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot3"><h3 class="text-center slot-name">Empty Player Slot</h3></div>
+    <div class="col-md-2 slot" id="slot4"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot5"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot6"><h3 class="text-center slot-name">Empty Player Slot</h3></div>
+</div>
+<br>
     <input type="hidden" name="slot1" id="inputSlot1" value="">
     <input type="hidden" name="slot2" id="inputSlot2" value="">
     <input type="hidden" name="slot3" id="inputSlot3" value="">
@@ -19,18 +41,19 @@
     <input type="hidden" name="slot5" id="inputSlot5" value="">
     <input type="hidden" name="slot6" id="inputSlot6" value="">
     <input type="hidden" name="tournamentId" value="<%=id%>">
-    <input type="submit" class="btn btn-warning btn-lg" value="Create Team" class="col-md-6">
+    <input type="submit" class="btn btn-warning btn-lg center-block" value="Create Team">
     </form>
 <br>
-<% } else if (user) { %>
+
+<% }} else if (user) { %>
 <div class="row">
     <form id="createLeagueForm" action="/manage/create/league" method="post">
     <div class="form-group">
-        <input type="text" name="name" placeholder="Enter your league name" class="col-md-6">
+        <input type="text" name="name" placeholder="Enter your league name" class="col-md-6 form-control">
     </div>
     <input type="hidden" name="endDate" value="<%=end%>">
     <input type="hidden" name="tournamentId" value="<%=id%>">
-    <input type="submit" class="class btn btn-warning" value="Create League" class="col-md-6">
+        <input type="submit" class="class btn btn-warning center-block" value="Create League">
     </form>
 </div>
 <% } %>
@@ -40,11 +63,11 @@
         <ul class="list-group roster">
             <li class="blank"></li>
         </ul>
-        <img class="loading" src="/images/ajax-loader.gif">
+        <img class="loading" style="display: inline-block" src="/images/ajax-loader.gif">
     </div>
     <div class="col-md-6 pane stats">
         <table class="statTable">
-            <tr><td class="pull-right">Overall Average</td><td class="stat"><div class="progress progress-striped"><div class="progress-bar progress-bar-default" id="overallRecord"></div></div></td></tr>
+            <tr><td class="pull-right">Overall Average</td><td class="stat"><div class="progress progress-striped"><div class="progress-bar progress-bar-warning" id="overallRecord"></div></div></td></tr>
             <tr><td class="pull-right">Average vP</td><td class="stat"><div class="progress progress-striped"><div class="progress-bar progress-bar-success" id="vP"></div></div></td></tr>
             <tr><td class="pull-right">Average vT</td><td class="stat"><div class="progress progress-striped"><div class="progress-bar progress-bar-primary" id="vT"></div></div></td></tr>
             <tr><td class="pull-right">Average vZ</td><td class="stat"><div class="progress progress-striped"><div class="progress-bar progress-bar-danger" id="vZ"></div></div></td></tr>

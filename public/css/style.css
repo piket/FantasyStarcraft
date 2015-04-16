@@ -126,7 +126,7 @@ ul.roster>li.list-group-item:hover {
 div.pane {
     /*border: 1px solid rgba(0,51,102,0.5);*/
     /*border-radius: 4px;*/
-    height: 500px;
+    height: 450px;
     overflow: auto;
     position: relative;
 }
@@ -154,6 +154,19 @@ img.loading {
     margin: 0 auto;
 }
 
+img.loading-horizontal {
+    position: absolute;
+    width: 300px;
+    top: 20px;
+    left: 350px;
+    margin: 0 auto;
+}
+
+td.loading-horizontal {
+    position: relative;
+    height: 80px;
+}
+
 .blank {
     display: none;
 }
@@ -169,10 +182,25 @@ span.player-tag {
     padding-right: 5px;
 }
 
-.slot,.filled {
+.slot {
     border: 4px solid rgba(0,51,102,0.5);
     border-radius: 16px;
     height: 100px;
+}
+
+.filled {
+    background-color: rgba(255,255,255,0.5);
+    border: 4px solid rgba(0,51,102,0.5);
+    border-radius: 16px;
+    height: 100px;
+}
+
+.filled>h3.slot-name, .slot>h3.slot-name: {
+    padding-top: 10px;
+}
+
+.slot-img {
+    top: 55px;
 }
 
 input[type=text] {
@@ -248,4 +276,8 @@ th {
 
 th.header {
     text-align: center;
+}
+
+.buffer {
+    margin-top: 55px;
 }

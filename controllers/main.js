@@ -166,7 +166,7 @@ router.get('/tournament/:tournament',function(req,res) {
 
     var name = req.params.tournament.replace(/_/g,' ')
 
-    db.tournament.find({where: {name:{ilike:name}}, include: [{model:db.league,include: [db.user]}]}).then(function(tourney) {
+    db.tournament.find({where: {name:{ilike:name}}, include: [{model:db.league,include: [db.user,db.team]}]}).then(function(tourney) {
         // async.map(tourney.roster,function(player,callback) {
         //     request(url + player,function(error,response,data) {
         //      if(!error && response.statusCode == 200) {
@@ -184,7 +184,9 @@ router.get('/tournament/:tournament',function(req,res) {
             if(req.session.user) {
             var userLeagues = tourney.leagues.filter(function(league) {
                 for(var i = 0; i < league.users.length; i++) {
-                    if(league.users[i].id === req.session.user.id) return true;
+                    if(league.users[i].id === req.session.user.id) {
+                        return true;
+                    }
                 };
                 return false;
                 });
@@ -192,6 +194,7 @@ router.get('/tournament/:tournament',function(req,res) {
             else {
                 var userLeagues = [];
             }
+
             res.render('main/tournament',{param:req.params.tournament,name:tourney.name,start:tourney.startDate,end:tourney.endDate,id:tourney.id,leagues:userLeagues});
         // });
 });

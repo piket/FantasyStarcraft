@@ -142,13 +142,16 @@ if($('ul.roster').is('ul')) {
                             btn.removeClass('add-btn').addClass('remove-btn').children('span').removeClass('glyphicon-ok-sign').addClass('glyphicon-remove-circle');
 
                             var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
-                            openSlot.children('h4').text($(this).text());
+                            openSlot.children('h3').text($(this).text());
+                            openSlot.append($(this).children('img.teamName').addClass('slot-img'));
+                            openSlot.append($(this).children('img.race-icon').addClass('slot-img').css({top:'47px'}));
 
                             $('#inputSlot'+openSlot.attr('id').slice(-1)).val($(this).attr('id'));
                             btn.attr('data',openSlot.attr('id'));
 
                             $(openSlot).click(function(e) {
-                                $(this).removeClass('filled').addClass('slot').children('h4').text('');
+                                $(this).removeClass('filled').addClass('slot').children('h3').text('Empty Player Slot');
+                                $(this).children('.slot-img').remove();
                             });
                         }
                         btn.blur();
@@ -161,7 +164,7 @@ if($('ul.roster').is('ul')) {
                     // console.log("Remove")
                         btn.removeClass('remove-btn').addClass('add-btn').children('span').removeClass('glyphicon-remove-circle').addClass('glyphicon-ok-sign');
 
-                        $('#'+btn.attr('data')).removeClass('filled').addClass('slot').children('h4').text('');
+                        $('#'+btn.attr('data')).removeClass('filled').addClass('slot').children('h3').text('Empty Player Slot').siblings('.slot-img').remove();
                         btn.blur();
                 } else {
                     // console.log("Other")
@@ -240,9 +243,10 @@ if($('table.team-table').is('table')) {
                 url: '/manage/pros/'+$(this).val()
             }).done(function(data) {
                 var total = 0;
-                console.log(data)
+                $('#loader'+idx).remove();
 
                 for(var player in data.scores) {
+                    // console.log(player);
                     var playerLine = '<tr><td>'+data.scores[player].name+'</td><td class="text-center">'+data.scores[player].wins+'</td><td class="text-center">'+data.scores[player].loses+'</td><td class="text-center">'+data.scores[player].streaks+'</td><td class="text-center">'+data.scores[player].points+'</td></tr>';
                     $('#'+idx).append(playerLine)
                     total += data.scores[player].points;
@@ -264,6 +268,7 @@ if($('table.team-table').is('table')) {
         });
     });
 
+    $('.alert').delay(5000).slideUp();
 
 // end of document-loaded function
 });

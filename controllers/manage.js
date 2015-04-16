@@ -8,21 +8,14 @@ var hashids = new Hashids(process.env.HASH_SALT,20);
 router.post('/create/team',function(req,res) {
     // db call to create your team
     var players = [req.body.slot1,req.body.slot2,req.body.slot3,req.body.slot4,req.body.slot5,req.body.slot6];
-    db.team.findOrCreate({where: {name:req.body.name,userId:req.session.user.id}, defaults: {name:req.body.name,players:players}})
+    db.team.findOrCreate({where: {name:req.body.name,leagueId:req.body.id}, defaults: {name:req.body.name,players:players}})
         .spread(function(team,created) {
             if(created) {
                 console.log("Team created");
                 db.user.find(req.session.user.id).then(function(thisUser) {
-                    db.league.findAll({include: [db.user], where: {tournamentId:req.body.tournamentId}}).then(function(leagues) {
-                        leagues.forEach(function(league) {
-                            for (var i = 0; i < league.users.length; i++) {
-                                if(league.users[i].id === req.session.user.id) {
-                                    league.addTeam(team);
-                                    thisUser.addTeam(team);
-                                    return;
-                                }
-                            }
-                        })
+                    db.league.find(req.body.id).then(function(thisLeague) {
+                        thisLeague.addTeam(team);
+                        thisUser.addTeam(team);
                         res.redirect('/auth/account');
                     })
                 })

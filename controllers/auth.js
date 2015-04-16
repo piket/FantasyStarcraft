@@ -7,10 +7,10 @@ var router = express.Router();
 
 router.get('/account',function(req,res) {
     if(req.session.user) {
-        db.user.find({where: {id:req.session.user.id}, include: [db.team]}).then(function(user) {
+        db.user.find({where: {id:req.session.user.id}, include: [db.team,{model:db.league,include:[db.tournament]}]}).then(function(user) {
             // res.send(user);
             // console.log(user.teams.get());
-            res.render('auth/account',{name:user.name,teams:user.teams})
+            res.render('auth/account',{name:user.name,teams:user.teams,leagues:user.leagues})
         })
         // res.render('auth/account');
     }
