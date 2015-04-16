@@ -57,42 +57,42 @@ router.get('/',function(req,res) {
     // res.render('main/index');
 });
 
-router.get('/gen_tourney',function(req,res) {
-    var initialTourneys = [{
-        name: '2015 Global Starcraft II League Season 2',
-        roster:[2,4,6,7,11,12,14,16,18,20,21,32,35,36,39,42,44,45,49,51,54,55,56,76,79,105,109,110,117,125,175,177,195,279,300,722,941,1301,1652,1659,1660,1664,1665,1709,2044,2046,2567,2568],
-        startDate: new Date(2015,3,1),
-        endDate: new Date(2015,5,27),
-        location: 'Seoul',
-        prize: '$93,135'
-    },
-    {
-        name: '2015 WCS Season 2',
-        roster: [],
-        startDate: new Date(2015,3,16),
-        endDate: new Date(2015,5,28),
-        location: 'Cologne, Burbank, Toronto',
-        prize: '$281,000'
-    },
-    {
-        name: '2015 KeSPA Cup Season 1',
-        roster: [3,5,31,45,49,76,79,109,233,279,300,309,1658,1659,1662,1709],
-        startDate: new Date(2015,4,3),
-        endDate: new Date(2015,4,5),
-        location: 'Seoul',
-        prize: '$22,775'
-    },
-    {
-        name: '2015 DreamHack Open - Tours',
-        roster: [],
-        startDate: new Date(2015,4,8),
-        endDate: new Date(2015,4,9),
-        location: 'Tours',
-        prize: '$25,000'
-    }];
-    initialTourneys.forEach(function(tourney) {
-        db.tournament.create(tourney);
-    })
+// router.get('/gen_tourney',function(req,res) {
+//     var initialTourneys = [{
+//         name: '2015 Global Starcraft II League Season 2',
+//         roster:[2,4,6,7,11,12,14,16,18,20,21,32,35,36,39,42,44,45,49,51,54,55,56,76,79,105,109,110,117,125,175,177,195,279,300,722,941,1301,1652,1659,1660,1664,1665,1709,2044,2046,2567,2568],
+//         startDate: new Date(2015,3,1),
+//         endDate: new Date(2015,5,27),
+//         location: 'Seoul',
+//         prize: '$93,135'
+//     },
+//     {
+//         name: '2015 WCS Season 2',
+//         roster: [],
+//         startDate: new Date(2015,3,16),
+//         endDate: new Date(2015,5,28),
+//         location: 'Cologne, Burbank, Toronto',
+//         prize: '$281,000'
+//     },
+//     {
+//         name: '2015 KeSPA Cup Season 1',
+//         roster: [3,5,31,45,49,76,79,109,233,279,300,309,1658,1659,1662,1709],
+//         startDate: new Date(2015,4,3),
+//         endDate: new Date(2015,4,5),
+//         location: 'Seoul',
+//         prize: '$22,775'
+//     },
+//     {
+//         name: '2015 DreamHack Open - Tours',
+//         roster: [],
+//         startDate: new Date(2015,4,8),
+//         endDate: new Date(2015,4,9),
+//         location: 'Tours',
+//         prize: '$25,000'
+//     }];
+//     initialTourneys.forEach(function(tourney) {
+//         db.tournament.create(tourney);
+//     })
     // var playerRoster = [
     // [3,5,31,45,49,76,79,109,233,279,300,309,1658,1659,1662,1709]
     // [2,4,6,7,11,12,14,16,18,20,21,32,35,36,39,42,44,45,49,51,54,55,56,76,79,105,109,110,117,125,175,177,195,279,300,722,941,1301,1652,1659,1660,1664,1665,1709,2044,2046,2567,2568]
@@ -125,7 +125,7 @@ router.get('/gen_tourney',function(req,res) {
 
     //     }
     // })
-})
+// })
 
 // router.get('/test',function(req,res) {
 //     var now = new Date();
@@ -162,7 +162,7 @@ router.get('/gen_tourney',function(req,res) {
 // view a specific tournament's details and roster
 router.get('/tournament/:tournament',function(req,res) {
     console.log(req.params.tournament)
-    var url = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY + "&tag=";
+    // var url = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY + "&tag=";
 
     var name = req.params.tournament.replace(/_/g,' ')
 
