@@ -79,10 +79,10 @@ $(function(){
             // }
             var matchStats = JSON.parse(data.stats);
 
-            $('#overallRecord').val((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%").css({width:((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%")}).text(((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%"));
-            $('#vP').val((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%").css({width:((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%")}).text((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%");
-            $('#vT').val((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%").css({width:((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%")}).text((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%");
-            $('#vZ').val((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%").css({width:((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%")}).text((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%");
+            $('#overallRecord').val((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%").css({width:((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%")}).children('span').text(((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%"));
+            $('#vP').val((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%").css({width:((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%")}).children('span').text((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%");
+            $('#vT').val((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%").css({width:((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%")}).children('span').text((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%");
+            $('#vZ').val((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%").css({width:((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%")}).children('span').text((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%");
 
             var numSign = (matchStats.rating ? '#':'');
 
@@ -269,6 +269,8 @@ if($('table.team-table').is('table')) {
     });
 
     $('.alert').delay(5000).slideUp();
+
+    if($('#username2').is('input')) $('#username2').focus();
 
 // end of document-loaded function
 });
