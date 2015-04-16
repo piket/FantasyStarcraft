@@ -28,7 +28,7 @@ router.post('/create/team',function(req,res) {
                 })
             } else {
                 req.flash('danger','You already have a team in this league');
-                res.redirect(req.header('Referrer'));
+                res.redirect('back');
             }
         })
     // res.send(req.body);
@@ -47,7 +47,7 @@ router.post('/create/league',function(req,res) {
         }
         else {
             req.flash('danger','A league with that name already exists, please choose a new name');
-            res.redirect(req.header('Referrer'));
+            res.redirect('back');
         }
     });
 });
@@ -181,7 +181,7 @@ router.get('/leagues',function(req,res) {
         })
     }
     else {
-        res.redirect(req.header('Referrer'));
+        res.redirect('back');
     }
 });
 

@@ -79,10 +79,10 @@ $(function(){
             // }
             var matchStats = JSON.parse(data.stats);
 
-            $('#overallRecord').text((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%");
-            $('#vP').text((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%");
-            $('#vT').text((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%");
-            $('#vZ').text((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%");
+            $('#overallRecord').val((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%").css({width:((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%")}).text(((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%"));
+            $('#vP').val((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%").css({width:((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%")}).text((matchStats.vP/matchStats.vPCount*100).toFixed(2) + "%");
+            $('#vT').val((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%").css({width:((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%")}).text((matchStats.vT/matchStats.vTCount*100).toFixed(2) + "%");
+            $('#vZ').val((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%").css({width:((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%")}).text((matchStats.vZ/matchStats.vZCount*100).toFixed(2) + "%");
 
             var numSign = (matchStats.rating ? '#':'');
 

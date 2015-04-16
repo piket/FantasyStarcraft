@@ -138,7 +138,11 @@ table.statTable {
 }
 
 td.stat {
+    padding-top: 10px;
     padding-left: 20px;
+    width: 375px;
+    text-align: center;
+    font-weight: bold;
 }
 
 img.loading {

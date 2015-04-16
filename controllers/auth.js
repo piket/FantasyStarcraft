@@ -15,7 +15,7 @@ router.get('/account',function(req,res) {
         // res.render('auth/account');
     }
     else {
-        res.redirect(req.header('Referrer'));
+        res.redirect('back');
     }
 });
 
@@ -73,15 +73,15 @@ router.post('/login',function(req,res) {
                         name:user.name
                     };
                     req.flash('success','You have been logged in.');
-                    res.redirect(req.header('Referrer'));
+                    res.redirect('back');
                 }else{
                     req.flash('danger','Invalid password.');
-                    res.redirect(req.header('Referrer'));
+                    res.redirect('back');
                 }
             })
         }else{
             req.flash('danger','Unknown user. Please sign up.');
-            res.redirect(req.header('Referrer'));
+            res.redirect('back');
         }
     });
 });
