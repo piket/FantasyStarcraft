@@ -149,6 +149,16 @@ td.stat {
     font-weight: bold;
 }
 
+td.rank {
+    text-align: center;
+    font-weight: bold;
+}
+
+th#playerIcons {
+    height: 50px;
+    position: relative;
+}
+
 .progress {
     position: relative;
 }
@@ -163,7 +173,7 @@ td.stat {
 
 img.loading {
     position: absolute;
-    top: 150px;
+    top: 100px;
     left: 200px;
     display: none;
     height: 200px;

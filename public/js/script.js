@@ -50,10 +50,16 @@ $(function(){
     var snapshot = function(playerId) {
         $('.statTable').hide();
         $('div.stats>img.loading').show();
+        $('#playerIcons').children().remove();
         $.ajax({
             method: 'get',
             url: '/pros/' + playerId + '/snapshot',
         }).done(function(data) {
+            // console.log(data.name);
+            $('#playerName').text(data.name)
+            $('#playerIcons').append('<img src="/images/teams/'+data.team+'.png" class="teamName icon-lg slot-img" style="top:0;right:200px">');
+            $('#playerIcons').append('<img src="/images/'+data.race+'.png" class="icon-sm race-icon slot-img" style="top:-7px;right:120px">');
+
             var matchStats = JSON.parse(data.stats);
 
             $('#overallRecord').val((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%").css({width:((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%")}).children('span').text(((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%"));

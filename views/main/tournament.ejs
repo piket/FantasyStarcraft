@@ -71,14 +71,14 @@
     </div>
     <div class="col-md-6 pane stats">
         <table class="statTable">
-            <tr><td class="pull-right">Overall Average</td><td class="stat"><div class="progress progress-striped"><div class="progress-bar progress-bar-warning" id="overallRecord"><span></span></div></div></td></tr>
-            <tr><td class="pull-right">Average vP</td><td class="stat"><div class="progress progress-striped"><div class="progress-bar progress-bar-success" id="vP"><span></span></div></div></td></tr>
-            <tr><td class="pull-right">Average vT</td><td class="stat"><div class="progress progress-striped"><div class="progress-bar progress-bar-primary" id="vT"><span></span></div></div></td></tr>
-            <tr><td class="pull-right">Average vZ</td><td class="stat"><div class="progress progress-striped"><div class="progress-bar progress-bar-danger" id="vZ"><span></span></div></div></td></tr>
-            <tr><td class="pull-right">Overall Rank</td><td id="overallRank" class="stat"></td></tr>
-            <tr><td class="pull-right">Rank vP</td><td id="vPRank" class="stat"></td></tr>
-            <tr><td class="pull-right">Rank vT</td><td id="vTRank" class="stat"></td></tr>
-            <tr><td class="pull-right">Rank vZ</td><td id="vZRank" class="stat"></td></tr>
+            <tr><th colspan="4" id="playerName" class="text-center"></th></tr>
+            <tr><th></th><th colspan="2" id="playerIcons"></th><th></th></tr>
+            <tr><td class="pull-right">Overall Average</td><td class="stat" colspan="3"><div class="progress progress-striped"><div class="progress-bar progress-bar-warning" id="overallRecord"><span></span></div></div></td></tr>
+            <tr><td class="pull-right">Average vP</td><td class="stat" colspan="3"><div class="progress progress-striped"><div class="progress-bar progress-bar-success" id="vP"><span></span></div></div></td></tr>
+            <tr><td class="pull-right">Average vT</td><td class="stat" colspan="3"><div class="progress progress-striped"><div class="progress-bar progress-bar-primary" id="vT"><span></span></div></div></td></tr>
+            <tr><td class="pull-right">Average vZ</td><td class="stat" colspan="3"><div class="progress progress-striped"><div class="progress-bar progress-bar-danger" id="vZ"><span></span></div></div></td></tr>
+            <tr><td class="pull-right">Overall Rank</td><td id="overallRank" class="rank"></td><td class="pull-right">Rank vP</td><td id="vPRank" class="rank"></td></tr>
+            <tr><td class="pull-right">Rank vT</td><td id="vTRank" class="rank"></td><td class="pull-right">Rank vZ</td><td id="vZRank" class="rank"></td></tr>
         </table>
         <img class="loading" src="/images/ajax-loader.gif">
     </div>
