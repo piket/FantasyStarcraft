@@ -48,8 +48,8 @@ router.post('/create/league',function(req,res) {
 router.get('/pros/:player', function(req,res) {
     var players = req.params.player.split(';');
     // console.log("/manage/pros/ called");
-    var playersURL ="http://aligulac.com/api/v1/player/set/"+req.params.player+"?apikey="+ALIGULAC_KEY
-    var url = "http://aligulac.com/api/v1/match?apikey="+ALIGULAC_KEY+"&eventobj__uplink__parent=41322&limit=0"
+    var playersURL ="http://aligulac.com/api/v1/player/set/"+req.params.player+"?apikey="+process.env.ALIGULAC_KEY
+    var url = "http://aligulac.com/api/v1/match?apikey="+process.env.ALIGULAC_KEY+"&eventobj__uplink__parent=41322&limit=0"
     request(url,function(error,response,data) {
         if(!error && response.statusCode == 200) {
             var matches = JSON.parse(data).objects
@@ -222,7 +222,7 @@ router.get('/get/:id',function(req,res) {
         }
         else {
             var players = team.players.join(';');
-            var playersURL ="http://aligulac.com/api/v1/player/set/"+players+"?apikey="+ALIGULAC_KEY
+            var playersURL ="http://aligulac.com/api/v1/player/set/"+players+"?apikey="+process.env.ALIGULAC_KEY
 
             request(playersURL,function(error,response,data) {
                 if(!error && response.statusCode == 200) {

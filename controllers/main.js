@@ -47,7 +47,7 @@ router.get('/pull/:tournament',function(req,res) {
     var name = req.params.tournament.replace(/_/g,' ')
 
     db.tournament.find({where: {name:{ilike:name}}}).then(function(tourney) {
-        var url = "http://aligulac.com/api/v1/player/set/"+tourney.roster.join(';')+"/?apikey="+ALIGULAC_KEY;
+        var url = "http://aligulac.com/api/v1/player/set/"+tourney.roster.join(';')+"/?apikey="+process.env.ALIGULAC_KEY;
         request(url, function(error,response,data) {
         // async.map(tourney.roster,function(player,callback) {
             // request(url + player,function(error,response,data) {
@@ -79,18 +79,18 @@ router.get('/pros/:player/snapshot',function(req,res) {
         if(created || player.updatedAt < (new Date().getTime() - (7*24*60*60*1000))){
 
 
-            var playerURL = "http://aligulac.com/api/v1/player/?apikey="+ALIGULAC_KEY+"&id="+req.params.player
+            var playerURL = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id="+req.params.player
             request(playerURL,function(error,response,playerData) {
                 if(!error && response.statusCode == 200) {
                     console.log("Pulling data for player: " + req.params.player);
                 // res.send(playerData);
                 var ratingId = JSON.parse(playerData).objects[0].current_rating.id;
 
-                request("http://aligulac.com/api/v1/activerating/?apikey="+ALIGULAC_KEY + "&id="+ratingId, function(error,response,ratingData){
+                request("http://aligulac.com/api/v1/activerating/?apikey="+process.env.ALIGULAC_KEY + "&id="+ratingId, function(error,response,ratingData){
                     if(!error && response.statusCode == 200) {
 
                         var id = JSON.parse(playerData).objects[0].id
-                        var urls = ["http://aligulac.com/api/v1/match/?apikey="+ALIGULAC_KEY+"&limit=0&pla__id="+id,"http://aligulac.com/api/v1/match/?apikey="+ALIGULAC_KEY+"&limit=100&plb__id="+id]
+                        var urls = ["http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=0&pla__id="+id,"http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&plb__id="+id]
 
                         async.map(urls,function(call,callback) {
                             request(call,function(error,response,data) {
