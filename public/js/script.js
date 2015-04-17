@@ -54,29 +54,6 @@ $(function(){
             method: 'get',
             url: '/pros/' + playerId + '/snapshot',
         }).done(function(data) {
-            // var matchStats = {
-            //     vP:0, vPCount:0, vT:0, vTCount:0, vZ:0, vZCount:0, overall:0
-            // }
-
-            // for (var i = 0; i < data.results.length; i++) {
-            //     switch(data.results[i].matchup.slice(1)) {
-            //         case 'vP':
-            //             matchStats.overall += data.results[i].player > data.results[i].opponent ? 1:0;
-            //             matchStats.vP += data.results[i].player > data.results[i].opponent ? 1:0;
-            //             matchStats.vPCount++;
-            //             break;
-            //         case 'vT':
-            //             matchStats.overall += data.results[i].player > data.results[i].opponent ? 1:0;
-            //             matchStats.vT += data.results[i].player > data.results[i].opponent ? 1:0;
-            //             matchStats.vTCount++;
-            //             break;
-            //         case 'vZ':
-            //             matchStats.overall += data.results[i].player > data.results[i].opponent ? 1:0;
-            //             matchStats.vZ += data.results[i].player > data.results[i].opponent ? 1:0;
-            //             matchStats.vZCount++;
-            //             break;
-            //     }
-            // }
             var matchStats = JSON.parse(data.stats);
 
             $('#overallRecord').val((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%").css({width:((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%")}).children('span').text(((matchStats.overall/matchStats.overallCount*100).toFixed(2) + "%"));
@@ -97,10 +74,7 @@ $(function(){
 }
 
 
-    // $('ul.roster>li.selected').click(function(){
-    //     snapshot($(this).attr('id'));
-    // })
-
+// if on a tournament page
 if($('ul.roster').is('ul')) {
     $('div.roster>img.loading').show()
     $.ajax({method: 'get',url: $('#param').val()}).done(function(rosterData) {
@@ -234,7 +208,9 @@ $('#selectLeague').change(function() {
         else {
             $('#inputTeamName').val('');
             $('#createTeamBtn').slideDown();
-            $('.filled').removeClass('filled').addClass('slot').children('img').remove().siblings('h3').text('Empty Player Slot');
+            var filledSlot = $('.filled').removeClass('filled').addClass('slot');
+            filledSlot.children('img').remove();
+            filledSlot.children('h3').text('Empty Player Slot');
             $('.add-btn').show();
         }
     });
