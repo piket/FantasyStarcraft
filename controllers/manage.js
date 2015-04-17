@@ -48,8 +48,8 @@ router.post('/create/league',function(req,res) {
 router.get('/pros/:player', function(req,res) {
     var players = req.params.player.split(';');
     // console.log("/manage/pros/ called");
-    var playersURL ="http://aligulac.com/api/v1/player/set/"+req.params.player+"?apikey="+'pEtSegtDJUOLseef32gl'
-    var url = "http://aligulac.com/api/v1/match?apikey="+'pEtSegtDJUOLseef32gl'+"&eventobj__uplink__parent=41322&limit=0"
+    var playersURL ="http://aligulac.com/api/v1/player/set/"+req.params.player+"?apikey="+ALIGULAC_KEY
+    var url = "http://aligulac.com/api/v1/match?apikey="+ALIGULAC_KEY+"&eventobj__uplink__parent=41322&limit=0"
     request(url,function(error,response,data) {
         if(!error && response.statusCode == 200) {
             var matches = JSON.parse(data).objects
@@ -152,9 +152,7 @@ router.get('/pros/:player', function(req,res) {
 router.get('/leagues',function(req,res) {
     if(req.session.user) {
         db.league.findAll({include: [db.user,db.team,db.tournament]}).then(function(leagues){
-        // db.user.find({where: {id:req.session.user.id}, include: [{model:db.league,include: [db.tournament,{model:db.team, include:[db.user]}]}]}).then(function(user) {
-            // res.send(leagues);
-            // res.send(user);
+
             var renderObj = {
                 leagues: leagues,
                 findUser: function(userArr,id) {
@@ -189,9 +187,7 @@ router.get('/join/:id',function(req,res) {
 router.put('/join',function(req,res) {
 
     db.user.find({where: {id:req.session.user.id}, include:[db.league]}).then(function(user) {
-        // user.leagues.forEach(function(league) {
 
-        // })
         if(user) {
             db.league.find({where: {id:req.body.id}, include: [db.user]}).then(function(league) {
                     var flag = false;
@@ -226,7 +222,7 @@ router.get('/get/:id',function(req,res) {
         }
         else {
             var players = team.players.join(';');
-            var playersURL ="http://aligulac.com/api/v1/player/set/"+players+"?apikey="+'pEtSegtDJUOLseef32gl'
+            var playersURL ="http://aligulac.com/api/v1/player/set/"+players+"?apikey="+ALIGULAC_KEY
 
             request(playersURL,function(error,response,data) {
                 if(!error && response.statusCode == 200) {
