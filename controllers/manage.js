@@ -47,7 +47,7 @@ router.post('/create/league',function(req,res) {
 
 router.get('/pros/:player', function(req,res) {
     var players = req.params.player.split(';');
-    console.log("/manage/pros/ called");
+    // console.log("/manage/pros/ called");
     var playersURL ="http://aligulac.com/api/v1/player/set/"+req.params.player+"?apikey="+'pEtSegtDJUOLseef32gl'
     var url = "http://aligulac.com/api/v1/match?apikey="+'pEtSegtDJUOLseef32gl'+"&eventobj__uplink__parent=41322&limit=0"
     request(url,function(error,response,data) {
@@ -216,6 +216,36 @@ router.put('/join',function(req,res) {
             res.send(false);
         }
     })
-})
+});
+
+router.get('/get/:id',function(req,res) {
+    if(req.session.user) {
+    db.team.find({where: {userId:req.session.user.id, leagueId:req.params.id}}).then(function(team) {
+        if(team === null) {
+            res.send(false);
+        }
+        else {
+            var players = team.players.join(';');
+            var playersURL ="http://aligulac.com/api/v1/player/set/"+players+"?apikey="+'pEtSegtDJUOLseef32gl'
+
+            request(playersURL,function(error,response,data) {
+                if(!error && response.statusCode == 200) {
+                    // res.send(data);
+                    var playerData = JSON.parse(data).objects.map(function(obj) {
+                        return {name:obj.tag, team:obj.current_teams[0].team.name, race:obj.race};
+                    });
+                    res.send(playerData);
+                }
+                else {
+                    res.send(false);
+                }
+            });
+        }
+    });
+    }
+    else {
+        res.send(false);
+    }
+});
 
 module.exports = router;

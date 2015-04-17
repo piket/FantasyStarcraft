@@ -104,31 +104,31 @@ $(function(){
 if($('ul.roster').is('ul')) {
     $('div.roster>img.loading').show()
     $.ajax({method: 'get',url: $('#param').val()}).done(function(rosterData) {
-            console.log(rosterData.roster)
-            rosterData.roster.forEach(function(player, idx) {
-                var listItem = '<li id="'+player.id+'" class="list-group-item'+(idx === 0 ? ' selected':'')+'"><img src="/images/flags_iso/24/'
-                +player.country.toLowerCase()+'.png" class="icon-sm pull-left"><span class="player-tag">' +player.tag+'</span><img src="/images/'
-                +player.race+'.png" class="icon-sm race-icon"> <img class="teamName icon-lg" title="'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent')
-                +'" src="/images/teams/'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent') +'.png">';
+        console.log(rosterData.roster)
+        rosterData.roster.forEach(function(player, idx) {
+            var listItem = '<li id="'+player.id+'" class="list-group-item'+(idx === 0 ? ' selected':'')+'"><img src="/images/flags_iso/24/'
+            +player.country.toLowerCase()+'.png" class="icon-sm pull-left"><span class="player-tag">' +player.tag+'</span><img src="/images/'
+            +player.race+'.png" class="icon-sm race-icon"> <img class="teamName icon-lg" title="'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent')
+            +'" src="/images/teams/'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent') +'.png">';
 
-                if ($('#login').is('a')) {
-                    listItem += '</li>';
-                }
-                else {
-                    listItem += '<button class="btn btn-default btn-xs add-btn"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button></li>';
-                }
+            if ($('#login').is('a')) {
+                listItem += '</li>';
+            }
+            else {
+                listItem += '<button class="btn btn-default btn-xs add-btn"><span class="glyphicon glyphicon-plus-sign" aria-hidden="true"></span></button></li>';
+            }
                 // console.log(listItem)
                 $('ul.roster').append($(listItem));
             });
-            $('div.roster>img.loading').remove();
+$('div.roster>img.loading').remove();
 
-            snapshot($('.selected').attr('id'));
+snapshot($('.selected').attr('id'));
 
-            $('ul.roster>li.list-group-item').on('mouseenter',function(e) {
-                $('.selected').removeClass('selected');
-                $(e.target).addClass('selected');
-            });
-            $('li.list-group-item').click(function(e) {
+$('ul.roster>li.list-group-item').on('mouseenter',function(e) {
+    $('.selected').removeClass('selected');
+    $(e.target).addClass('selected');
+});
+$('li.list-group-item').click(function(e) {
                 // console.log(e.target)
                 if($(e.target).is('span')) {
                     var btn = $(e.target).parent();
@@ -138,23 +138,23 @@ if($('ul.roster').is('ul')) {
                 }
                 if(btn.hasClass('add-btn')) {
                     // console.log("Add",$(this).siblings('.player-tag').text(),$(this).parent());
-                     if ($('.filled').length < 6) {
-                            btn.removeClass('add-btn').addClass('remove-btn').children('span').removeClass('glyphicon-ok-sign').addClass('glyphicon-remove-circle');
+                    if ($('.filled').length < 6) {
+                        btn.removeClass('add-btn').addClass('remove-btn').children('span').removeClass('glyphicon-ok-sign').addClass('glyphicon-remove-circle');
 
-                            var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
-                            openSlot.children('h3').text($(this).text());
-                            openSlot.append($(this).children('img.teamName').addClass('slot-img'));
-                            openSlot.append($(this).children('img.race-icon').addClass('slot-img').css({top:'47px'}));
+                        var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
+                        openSlot.children('h3').text($(this).text());
+                        openSlot.append($(this).children('img.teamName').addClass('slot-img'));
+                        openSlot.append($(this).children('img.race-icon').addClass('slot-img').css({top:'47px'}));
 
-                            $('#inputSlot'+openSlot.attr('id').slice(-1)).val($(this).attr('id'));
-                            btn.attr('data',openSlot.attr('id'));
+                        $('#inputSlot'+openSlot.attr('id').slice(-1)).val($(this).attr('id'));
+                        btn.attr('data',openSlot.attr('id'));
 
-                            $(openSlot).click(function(e) {
-                                $(this).removeClass('filled').addClass('slot').children('h3').text('Empty Player Slot');
-                                $(this).children('.slot-img').remove();
-                            });
-                        }
-                        btn.blur();
+                        $(openSlot).click(function(e) {
+                            $(this).removeClass('filled').addClass('slot').children('h3').text('Empty Player Slot');
+                            $(this).children('.slot-img').remove();
+                        });
+                    }
+                    btn.blur();
                     $('.remove-btn').hover(function(e) {
                         $(this).children('span').removeClass('glyphicon-ok-circle').addClass('glyphicon-remove-circle');
                     },function(e) {
@@ -162,10 +162,10 @@ if($('ul.roster').is('ul')) {
                     });
                 } else if (btn.hasClass('remove-btn')) {
                     // console.log("Remove")
-                        btn.removeClass('remove-btn').addClass('add-btn').children('span').removeClass('glyphicon-remove-circle').addClass('glyphicon-ok-sign');
+                    btn.removeClass('remove-btn').addClass('add-btn').children('span').removeClass('glyphicon-remove-circle').addClass('glyphicon-ok-sign');
 
-                        $('#'+btn.attr('data')).removeClass('filled').addClass('slot').children('h3').text('Empty Player Slot').siblings('.slot-img').remove();
-                        btn.blur();
+                    $('#'+btn.attr('data')).removeClass('filled').addClass('slot').children('h3').text('Empty Player Slot').siblings('.slot-img').remove();
+                    btn.blur();
                 } else {
                     // console.log("Other")
                     $('.selected').removeClass('selected');
@@ -174,23 +174,63 @@ if($('ul.roster').is('ul')) {
                 }
             });
 
-                    $('.add-btn').hover(function(e) {
-                        var glyph = $(this).children('span');
-                        if(glyph.hasClass('glyphicon-plus-sign')) {
-                            glyph.removeClass('glyphicon-plus-sign').addClass('glyphicon-ok-sign');
-                        }
-                        else if (glyph.hasClass('glyphicon-ok-circle')) {
-                        glyph.removeClass('glyphicon-ok-circle').addClass('glyphicon-remove-circle');
-                    }
-                    },function(e) {
-                        var glyph = $(this).children('span');
-                        if(glyph.hasClass('glyphicon-ok-sign')) {
-                        glyph.removeClass('glyphicon-ok-sign').addClass('glyphicon-plus-sign');
-                    }
-                        else if (glyph.hasClass('glyphicon-ok-circle')) {
-                        glyph.removeClass('glyphicon-remove-circle').addClass('glyphicon-ok-circle');
-                    }
-                    });
+$('.add-btn').hover(function(e) {
+    var glyph = $(this).children('span');
+    if(glyph.hasClass('glyphicon-plus-sign')) {
+        glyph.removeClass('glyphicon-plus-sign').addClass('glyphicon-ok-sign');
+    }
+    else if (glyph.hasClass('glyphicon-ok-circle')) {
+        glyph.removeClass('glyphicon-ok-circle').addClass('glyphicon-remove-circle');
+    }
+},function(e) {
+    var glyph = $(this).children('span');
+    if(glyph.hasClass('glyphicon-ok-sign')) {
+        glyph.removeClass('glyphicon-ok-sign').addClass('glyphicon-plus-sign');
+    }
+    else if (glyph.hasClass('glyphicon-ok-circle')) {
+        glyph.removeClass('glyphicon-remove-circle').addClass('glyphicon-ok-circle');
+    }
+});
+
+$.ajax({
+    method: 'get',
+    url: '/manage/get/'+$('#selectLeague').val()
+}).done(function(data) {
+        console.log("Data:",data);
+    if(data !== false) {
+        for(var i = 0; i < 6; i++) {
+            var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
+            openSlot.children('h3').text(data[i].name);
+            openSlot.append('<img src="/images/teams/'+data[i].team+'.png" class="teamName icon-lg slot-img">');
+            openSlot.append('<img src="/images/'+data[i].race+'.png" class="icon-sm race-icon slot-img" style="top:47px">');
+        }
+        $('.add-btn').hide();
+        }
+        else {
+            $('.add-btn').show();
+        }
+});
+
+$('#selectLeague').change(function() {
+    $.ajax({
+        method: 'get',
+        url: '/manage/get/'+$(this).val()
+    }).done(function(data) {
+        if(data !== false) {
+            for(var i = 0; i < 6; i++) {
+                var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
+                openSlot.children('h3').text(data[i].name);
+                openSlot.append('<img src="/images/teams/'+data[i].team+'.png" class="teamName icon-lg slot-img">');
+                openSlot.append('<img src="/images/'+data[i].race+'.png" class="icon-sm race-icon slot-img" style="top:47px">');
+            }
+            $('.remove-btn').removeClass('remove-btn').addClass('add-btn');
+            $('.add-btn').hide();
+        }
+        else {
+            $('.add-btn').show();
+        }
+    });
+});
 });
 
 $('#createTeamForm').submit(function(e) {
