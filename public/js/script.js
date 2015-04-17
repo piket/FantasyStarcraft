@@ -76,7 +76,29 @@ $(function(){
 
 // if on a tournament page
 if($('ul.roster').is('ul')) {
-    $('div.roster>img.loading').show()
+    $('div.roster>img.loading').show();
+
+    $.ajax({
+        method: 'get',
+        url: '/manage/get/'+$('#selectLeague').val()
+    }).done(function(data) {
+        console.log("Data:",data);
+        if(data !== false) {
+            for(var i = 0; i < 6; i++) {
+                var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
+                openSlot.children('h3').text(data[i].name);
+                openSlot.append('<img src="/images/teams/'+data[i].team+'.png" class="teamName icon-lg slot-img">');
+                openSlot.append('<img src="/images/'+data[i].race+'.png" class="icon-sm race-icon slot-img" style="top:47px">');
+            }
+            $('#inputTeamName').val(data[6]);
+            $('#createTeamBtn').slideUp();
+            $('.add-btn').hide();
+        }
+        else {
+            $('.add-btn').show();
+        }
+    });
+
     $.ajax({method: 'get',url: $('#param').val()}).done(function(rosterData) {
         console.log(rosterData.roster)
         rosterData.roster.forEach(function(player, idx) {
@@ -94,14 +116,17 @@ if($('ul.roster').is('ul')) {
                 // console.log(listItem)
                 $('ul.roster').append($(listItem));
             });
-$('div.roster>img.loading').remove();
 
-snapshot($('.selected').attr('id'));
+    $('div.roster>img.loading').remove();
+
+    snapshot($('.selected').attr('id'));
+
 
 $('ul.roster>li.list-group-item').on('mouseenter',function(e) {
     $('.selected').removeClass('selected');
     $(e.target).addClass('selected');
 });
+
 $('li.list-group-item').click(function(e) {
                 // console.log(e.target)
                 if($(e.target).is('span')) {
@@ -166,26 +191,6 @@ $('.add-btn').hover(function(e) {
     }
 });
 
-$.ajax({
-    method: 'get',
-    url: '/manage/get/'+$('#selectLeague').val()
-}).done(function(data) {
-        console.log("Data:",data);
-    if(data !== false) {
-        for(var i = 0; i < 6; i++) {
-            var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
-            openSlot.children('h3').text(data[i].name);
-            openSlot.append('<img src="/images/teams/'+data[i].team+'.png" class="teamName icon-lg slot-img">');
-            openSlot.append('<img src="/images/'+data[i].race+'.png" class="icon-sm race-icon slot-img" style="top:47px">');
-        }
-        $('#inputTeamName').val(data[6]);
-        $('#createTeamBtn').slideUp();
-        $('.add-btn').hide();
-        }
-        else {
-            $('.add-btn').show();
-        }
-});
 
 $('#selectLeague').change(function() {
     $.ajax({
