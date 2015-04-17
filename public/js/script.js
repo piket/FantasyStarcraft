@@ -56,7 +56,7 @@ $(function(){
             url: '/pros/' + playerId + '/snapshot',
         }).done(function(data) {
             // console.log(data.name);
-            $('#playerName').text(data.name)
+            $('#playerName').text(data.name);
             $('#playerIcons').append('<img src="/images/teams/'+data.team+'.png" class="teamName icon-lg slot-img" style="top:0;right:200px">');
             $('#playerIcons').append('<img src="/images/'+data.race+'.png" class="icon-sm race-icon slot-img" style="top:-7px;right:120px">');
 
@@ -83,6 +83,7 @@ $(function(){
 // if on a tournament page
 if($('ul.roster').is('ul')) {
     $('div.roster>img.loading').show();
+    var teamLoaded = false;
 
     $.ajax({
         method: 'get',
@@ -98,7 +99,7 @@ if($('ul.roster').is('ul')) {
             }
             $('#inputTeamName').val(data[6]);
             $('#createTeamBtn').slideUp();
-            $('.add-btn').hide();
+            teamLoaded = true;
         }
         else {
             $('.add-btn').show();
@@ -122,7 +123,9 @@ if($('ul.roster').is('ul')) {
                 // console.log(listItem)
                 $('ul.roster').append($(listItem));
             });
-
+    if (teamLoaded) {
+        $('.add-btn').hide();
+    }
     $('div.roster>img.loading').remove();
 
     snapshot($('.selected').attr('id'));
