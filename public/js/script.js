@@ -207,7 +207,6 @@ $.ajax({
         $('.add-btn').hide();
         }
         else {
-            $('.filled').removeClass('filled').addClass('slot').children('img').remove().siblings('h3').text('Empty Player Slot');
             $('.add-btn').show();
         }
 });
@@ -228,6 +227,7 @@ $('#selectLeague').change(function() {
             $('.add-btn').hide();
         }
         else {
+            $('.filled').removeClass('filled').addClass('slot').children('img').remove().siblings('h3').text('Empty Player Slot');
             $('.add-btn').show();
         }
     });
