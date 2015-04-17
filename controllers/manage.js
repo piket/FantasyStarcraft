@@ -234,6 +234,7 @@ router.get('/get/:id',function(req,res) {
                     var playerData = JSON.parse(data).objects.map(function(obj) {
                         return {name:obj.tag, team:obj.current_teams[0].team.name, race:obj.race};
                     });
+                    playerData.push(team.name)
                     res.send(playerData);
                 }
                 else {

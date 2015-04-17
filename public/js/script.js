@@ -204,6 +204,8 @@ $.ajax({
             openSlot.append('<img src="/images/teams/'+data[i].team+'.png" class="teamName icon-lg slot-img">');
             openSlot.append('<img src="/images/'+data[i].race+'.png" class="icon-sm race-icon slot-img" style="top:47px">');
         }
+        $('#inputTeamName').val(data[6]);
+        $('#createTeamBtn').slideUp();
         $('.add-btn').hide();
         }
         else {
@@ -216,6 +218,7 @@ $('#selectLeague').change(function() {
         method: 'get',
         url: '/manage/get/'+$(this).val()
     }).done(function(data) {
+        console.log("Data:",data)
         if(data !== false) {
             for(var i = 0; i < 6; i++) {
                 var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
@@ -223,10 +226,14 @@ $('#selectLeague').change(function() {
                 openSlot.append('<img src="/images/teams/'+data[i].team+'.png" class="teamName icon-lg slot-img">');
                 openSlot.append('<img src="/images/'+data[i].race+'.png" class="icon-sm race-icon slot-img" style="top:47px">');
             }
+            $('#inputTeamName').val(data[6]);
+            $('#createTeamBtn').slideUp();
             $('.remove-btn').removeClass('remove-btn').addClass('add-btn');
             $('.add-btn').hide();
         }
         else {
+            $('#inputTeamName').val('');
+            $('#createTeamBtn').slideDown();
             $('.filled').removeClass('filled').addClass('slot').children('img').remove().siblings('h3').text('Empty Player Slot');
             $('.add-btn').show();
         }

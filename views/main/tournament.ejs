@@ -15,7 +15,7 @@
         <div class="row">
     <div class="form-group">
             <div class="col-md-5">
-        <input type="text" name="name" placeholder="Enter your team name" class="form-control">
+        <input type="text" name="name" placeholder="Enter your team name" class="form-control" id="inputTeamName">
             </div>
         <label for="id" class="col-md-1"><h4 class="text-center star-font blue-glow">for</h4></label>
             <div class="col-md-4">
@@ -26,19 +26,13 @@
         </select>
             </div>
             <!-- <div class="col-md-2"> -->
-            <input type="submit" class="btn btn-warning col-md-2" value="Create Team">
+            <input type="submit" class="btn btn-warning col-md-2" value="Create Team" id="createTeamBtn">
             <!-- </div> -->
         </div>
 
         </div>
         </div>
     </div>
-    <br>
-<div class="row">
-    <div class="col-md-2 slot" id="slot1"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot2"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot3"><h3 class="text-center slot-name">Empty Player Slot</h3></div>
-    <div class="col-md-2 slot" id="slot4"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot5"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot6"><h3 class="text-center slot-name">Empty Player Slot</h3></div>
-</div>
-<br>
     <input type="hidden" name="slot1" id="inputSlot1" value="">
     <input type="hidden" name="slot2" id="inputSlot2" value="">
     <input type="hidden" name="slot3" id="inputSlot3" value="">
@@ -47,6 +41,12 @@
     <input type="hidden" name="slot6" id="inputSlot6" value="">
     <input type="hidden" name="tournamentId" value="<%=id%>">
     </form>
+    <br>
+<div class="row">
+    <div class="col-md-2 slot" id="slot1"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot2"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot3"><h3 class="text-center slot-name">Empty Player Slot</h3></div>
+    <div class="col-md-2 slot" id="slot4"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot5"><h3 class="text-center slot-name">Empty Player Slot</h3></div><div class="col-md-2 slot" id="slot6"><h3 class="text-center slot-name">Empty Player Slot</h3></div>
+</div>
+<br>
 <hr>
 <% } if (user) { %>
 <div class="row">
