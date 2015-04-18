@@ -281,15 +281,19 @@ $(document).on('keydown',function(e) {
 
 if($('table.team-table').is('table')) {
         // on the account page
-        $('.teamId').each(function(idx) {
-            // console.log("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nLoading:",$(this).val());
-            // console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
+        // $('.teamId').each(function(idx,team) {
+
+    var loadTable = function(idx) {
+        if (idx < $('.team-table').length) {
+            var team = $('.teamId').eq(idx);
+            console.log("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nLoading:",$(team).val());
+            console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
 
             $.ajax({
                 method: 'get',
-                url: '/manage/pros/'+$(this).val()
+                url: '/manage/pros/'+team.val()
             }).done(function(data) {
-                // console.log("Data loaded:",data);
+                console.log("Data loaded:",data);
                 var total = 0;
                 $('#loader'+idx).remove();
 
@@ -302,9 +306,13 @@ if($('table.team-table').is('table')) {
                     }
                 }
                 $('#'+idx).children().children().children('.total').text(total);
+                loadTable(idx+1);
             });
-        });
+        }
     }
+
+    loadTable(0);
+}
 
     $('#joinForm').submit(function(e) {
         e.preventDefault();
