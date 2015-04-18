@@ -286,27 +286,29 @@ if($('table.team-table').is('table')) {
     var loadTable = function(idx) {
         if (idx < $('.team-table').length) {
             var team = $('.teamId').eq(idx);
-            var id = team.attr('id');
-            console.log("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nLoading:",$(team).val());
-            console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
+            var id = '#' + $(team).val();
+            var loaderid = '#loader' + $(team).val();
+            // console.log("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nLoading:",$(team).val());
+            // console.log("table id:",id,'loader id:',loaderid)
+            // console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
 
             $.ajax({
                 method: 'get',
                 url: '/manage/pros/'+team.val()
             }).done(function(data) {
-                console.log("Data loaded:",data);
+                // console.log("Data loaded:",data);
                 var total = 0;
-                $('#loader'+id).remove();
+                $(loaderid).remove();
 
                 for(var player in data.scores) {
                     // console.log(player);
                     if (player !== "date") {
                         var playerLine = '<tr><td>'+data.scores[player].name+'</td><td class="text-center">'+data.scores[player].wins+'</td><td class="text-center">'+data.scores[player].loses+'</td><td class="text-center">'+data.scores[player].streaks+'</td><td class="text-center">'+data.scores[player].points+'</td></tr>';
-                        $('#'+id).append(playerLine)
+                        $(id).append(playerLine)
                         total += data.scores[player].points;
                     }
                 }
-                $('#'+id).children().children().children('.total').text(total);
+                $(id).children().children().children('.total').text(total);
                 loadTable(idx+1);
             });
         }
