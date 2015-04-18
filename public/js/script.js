@@ -193,12 +193,11 @@ $('li.list-group-item').click(function(e) {
 
                     $('#'+btn.attr('data')).removeClass('filled').addClass('slot').children('h3').text('Empty Player Slot').siblings('.slot-img').remove();
                     btn.blur();
-                } else {
+                }
                     // console.log("Other")
                     $('.selected').removeClass('selected');
                     $(this).addClass('selected');
                     snapshot($('.selected').attr('id'));
-                }
             });
 
 $('.add-btn').hover(function(e) {
