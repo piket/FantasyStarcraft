@@ -31,6 +31,8 @@ router.post('/create/league',function(req,res) {
     db.league.findOrCreate({where: {name:req.body.name}, defaults: {name:req.body.name,endDate:req.body.endDate}}).spread(function(league,created) {
         if(created) {
             db.tournament.find(req.body.tournamentId).then(function(tourney) {
+                league.tournamentApiId = tourney.apiId;
+                league.save();
                 db.user.find(req.session.user.id).then(function(user) {
                     user.addLeague(league);
                     tourney.addLeague(league);
