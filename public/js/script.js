@@ -79,17 +79,12 @@ $(function(){
         });
 }
 
-
-// if on a tournament page
-if($('ul.roster').is('ul')) {
-    $('div.roster>img.loading').show();
-    var teamLoaded = false;
-
+var loadTeamData = function() {
     $.ajax({
         method: 'get',
         url: '/manage/get/'+$('#selectLeague').val()
     }).done(function(data) {
-        console.log("Data:",data);
+        // console.log("Data:",data)
         if(data !== false) {
             for(var i = 0; i < 6; i++) {
                 var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
@@ -99,20 +94,41 @@ if($('ul.roster').is('ul')) {
             }
             $('#inputTeamName').val(data[6]);
             $('#createTeamBtn').slideUp();
+            $('.remove-btn').removeClass('remove-btn').addClass('add-btn');
+            $('.add-btn').hide();
             teamLoaded = true;
         }
         else {
+            $('#inputTeamName').val('');
+            $('#createTeamBtn').slideDown();
+            var filledSlot = $('.filled').removeClass('filled').addClass('slot');
+            filledSlot.children('img').remove();
+            filledSlot.children('h3').text('Empty Player Slot');
             $('.add-btn').show();
+            teamLoaded = false;
         }
     });
+}
+
+// if on a tournament page
+if($('ul.roster').is('ul')) {
+    $('div.roster>img.loading').show();
+    var teamLoaded = false;
+    loadTeamData();
+    // console.log(teamLoaded)
 
     $.ajax({method: 'get',url: $('#param').val()}).done(function(rosterData) {
-        console.log(rosterData.roster)
+        // console.log(rosterData.roster)
         rosterData.roster.forEach(function(player, idx) {
-            var listItem = '<li id="'+player.id+'" class="list-group-item'+(idx === 0 ? ' selected':'')+'"><img src="/images/flags_iso/24/'
-            +player.country.toLowerCase()+'.png" class="icon-sm pull-left"><span class="player-tag">' +player.tag+'</span><img src="/images/'
-            +player.race+'.png" class="icon-sm race-icon"> <img class="teamName icon-lg" title="'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent')
-            +'" src="/images/teams/'+(player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent') +'.png">';
+            if (player.team) {
+                var playerTeam = player.team;
+            }
+            else {
+                var playerTeam = player.current_teams.length > 0 ? player.current_teams[0].team.name:'Free Agent';
+            }
+            var listItem = '<li id="'+(player.apiId ? player.apiId:player.id)+'" class="list-group-item'+(idx === 0 ? ' selected':'')+'"><img src="/images/flags_iso/24/'
+            +player.country.toLowerCase()+'.png" class="icon-sm pull-left"><span class="player-tag">' +(player.tag ? player.tag:player.name)+'</span><img src="/images/'
+            +player.race+'.png" class="icon-sm race-icon"> <img class="teamName icon-lg" title="'+playerTeam+'" src="/images/teams/'+playerTeam+'.png">';
 
             if ($('#login').is('a')) {
                 listItem += '</li>';
@@ -147,12 +163,15 @@ $('li.list-group-item').click(function(e) {
                 if(btn.hasClass('add-btn')) {
                     // console.log("Add",$(this).siblings('.player-tag').text(),$(this).parent());
                     if ($('.filled').length < 6) {
+
                         btn.removeClass('add-btn').addClass('remove-btn').children('span').removeClass('glyphicon-ok-sign').addClass('glyphicon-remove-circle');
 
                         var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
                         openSlot.children('h3').text($(this).text());
-                        openSlot.append($(this).children('img.teamName').addClass('slot-img'));
-                        openSlot.append($(this).children('img.race-icon').addClass('slot-img').css({top:'47px'}));
+                        var teamImg = $(this).children('img.teamName').clone();
+                        var raceImg = $(this).children('img.race-icon').clone();
+                        openSlot.append(teamImg.addClass('slot-img'));
+                        openSlot.append(raceImg.addClass('slot-img').css({top:'47px'}));
 
                         $('#inputSlot'+openSlot.attr('id').slice(-1)).val($(this).attr('id'));
                         btn.attr('data',openSlot.attr('id'));
@@ -202,32 +221,7 @@ $('.add-btn').hover(function(e) {
 
 
 $('#selectLeague').change(function() {
-    $.ajax({
-        method: 'get',
-        url: '/manage/get/'+$(this).val()
-    }).done(function(data) {
-        console.log("Data:",data)
-        if(data !== false) {
-            for(var i = 0; i < 6; i++) {
-                var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
-                openSlot.children('h3').text(data[i].name);
-                openSlot.append('<img src="/images/teams/'+data[i].team+'.png" class="teamName icon-lg slot-img">');
-                openSlot.append('<img src="/images/'+data[i].race+'.png" class="icon-sm race-icon slot-img" style="top:47px">');
-            }
-            $('#inputTeamName').val(data[6]);
-            $('#createTeamBtn').slideUp();
-            $('.remove-btn').removeClass('remove-btn').addClass('add-btn');
-            $('.add-btn').hide();
-        }
-        else {
-            $('#inputTeamName').val('');
-            $('#createTeamBtn').slideDown();
-            var filledSlot = $('.filled').removeClass('filled').addClass('slot');
-            filledSlot.children('img').remove();
-            filledSlot.children('h3').text('Empty Player Slot');
-            $('.add-btn').show();
-        }
-    });
+    loadTeamData();
 });
 });
 
@@ -244,7 +238,7 @@ $(document).on('keydown',function(e) {
         if($('ul.roster>li.list-group-item').first().hasClass('selected')) {
             break;
         } else {
-            console.log("previous item")
+            // console.log("previous item")
             $('.selected').removeClass('selected').prev().addClass('selected');
                         // if ($('div.roster').scrollTop() / 41 < $('ul.roster>li.list-group-item').length - 8) {
                             $('div.roster').scrollTop($('div.roster').scrollTop() -41);
@@ -257,7 +251,7 @@ $(document).on('keydown',function(e) {
                     if($('ul.roster>li.list-group-item').last().hasClass('selected')) {
                         break;
                     } else {
-                        console.log("next item")
+                        // console.log("next item")
                         $('.selected').removeClass('selected').next().addClass('selected');
                         if($('ul.roster>li.list-group-item').index($('.selected')) > 8) {
                           $('div.roster').scrollTop($('div.roster').scrollTop() + 41);
@@ -273,21 +267,25 @@ $(document).on('keydown',function(e) {
 
 if($('table.team-table').is('table')) {
         // on the account page
-        $('.playerArr').each(function(idx) {
-            console.log("Loading:",$(this).val());
+        $('.teamId').each(function(idx) {
+            // console.log("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nLoading:",$(this).val());
+            // console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
 
             $.ajax({
                 method: 'get',
                 url: '/manage/pros/'+$(this).val()
             }).done(function(data) {
+                // console.log("Data loaded:",data);
                 var total = 0;
                 $('#loader'+idx).remove();
 
                 for(var player in data.scores) {
                     // console.log(player);
-                    var playerLine = '<tr><td>'+data.scores[player].name+'</td><td class="text-center">'+data.scores[player].wins+'</td><td class="text-center">'+data.scores[player].loses+'</td><td class="text-center">'+data.scores[player].streaks+'</td><td class="text-center">'+data.scores[player].points+'</td></tr>';
-                    $('#'+idx).append(playerLine)
-                    total += data.scores[player].points;
+                    if (player !== "date") {
+                        var playerLine = '<tr><td>'+data.scores[player].name+'</td><td class="text-center">'+data.scores[player].wins+'</td><td class="text-center">'+data.scores[player].loses+'</td><td class="text-center">'+data.scores[player].streaks+'</td><td class="text-center">'+data.scores[player].points+'</td></tr>';
+                        $('#'+idx).append(playerLine)
+                        total += data.scores[player].points;
+                    }
                 }
                 $('#'+idx).children().children().children('.total').text(total);
             });
@@ -301,7 +299,7 @@ if($('table.team-table').is('table')) {
             url: $(this).attr('action'),
             data: $(this).serialize()
         }).done(function(response) {
-            console.log(response)
+            // console.log(response)
             location.href = '/manage/leagues';
         });
     });

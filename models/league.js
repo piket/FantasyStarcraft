@@ -3,7 +3,8 @@ module.exports = function(sequelize, DataTypes) {
   var league = sequelize.define("league", {
     name: DataTypes.STRING,
     endDate: DataTypes.DATE,
-    tournamentId: DataTypes.INTEGER
+    tournamentId: DataTypes.INTEGER,
+    tournamentApiId: DataTypes.INTEGER
   }, {
     classMethods: {
       associate: function(models) {

@@ -45,106 +45,116 @@ router.post('/create/league',function(req,res) {
     });
 });
 
-router.get('/pros/:player', function(req,res) {
-    var players = req.params.player.split(';');
+router.get('/pros/:team', function(req,res) {
     // console.log("/manage/pros/ called");
-    var playersURL ="http://aligulac.com/api/v1/player/set/"+req.params.player+"?apikey="+process.env.ALIGULAC_KEY
-    var url = "http://aligulac.com/api/v1/match?apikey="+process.env.ALIGULAC_KEY+"&eventobj__uplink__parent=41322&limit=0"
-    request(url,function(error,response,data) {
-        if(!error && response.statusCode == 200) {
-            var matches = JSON.parse(data).objects
-            console.log("Pulling data:",players)
-            // res.send(matches);
-            var details = [];
-            for (var i = 0; i < matches.length; i++) {
-                if (players.indexOf(matches[i].pla.id.toString()) !== -1 || players.indexOf(matches[i].plb.id.toString()) !== -1) {
-                details.push({
-                    playerA: matches[i].pla.tag,
-                    playerB: matches[i].plb.tag,
-                    idA: matches[i].pla.id,
-                    idB: matches[i].plb.id,
-                    score: [matches[i].sca,matches[i].scb],
-                    matchup: matches[i].rca +"v" + matches[i].rcb
-                });
-                }
-            }
 
-            var scores = {};
-            players.forEach(function(player) {
-                var id = parseInt(player);
-                var record = {wins:0,loses:0,streaks:0}
-                record.points = details.reduce(function(prev,current){
-                    if(current.idA === id) {
-                        var p = current.score[0];
-                        var o = current.score[1];
-                   }
-                    else if (current.idB === id) {
-                        var p = current.score[1];
-                        var o = current.score[0];
-                    }
-                    else {
-                        return prev + 0;
-                    }
+    db.team.find({where: {id:req.params.team},include: [db.league]}).then(function(team) {
+        console.log("Team found",team.name);
+        if(team === null || team.scores === null || team.scores.date < (new Date().getTime() - (24*60*60*1000))) {
+            var players = team.players;
+            // res.send(team);
+             var url = "http://aligulac.com/api/v1/match?apikey="+process.env.ALIGULAC_KEY+"&eventobj__uplink__parent="+team.league.tournamentApiId+"&limit=0"
 
-                    switch(true) {
-                        case (p+o) <= 5 && (p+o) >= 3:
-                            if(o === 0) {
-                                record.streaks++;
-                                record.wins+=p;
-                                return prev + (p*2) + 1;
-                            }
-                            record.wins+=p;
-                            record.loses+=o;
-                            return prev + (p*2) - o;
-                        case (p+o) <=7 && (p+o) >= 4:
-                            if(o === 0) {
-                                record.streaks++;
-                                record.wins+=p;
-                                return prev + (p*2) + 2;
-                            }
-                            record.wins+=p;
-                            record.loses+=o;
-                            return prev + (p*2) - o;
-                        case (p+o) <= 11 && (p+o) >= 5:
-                            if (o === 0) {
-                                record.streaks++;
-                                record.wins+=p;
-                                return prev + (p*2) + 3;
-                            }
-                            record.wins+=p;
-                            record.loses+=o;
-                            return prev + (p*2) - o;
-                        case (p+o) > 11:
-                            if (o === 0) {
-                                record.streaks++;
-                                record.wins+=p;
-                                return prev + (p*2) + 3;
-                            }
-                            record.wins+=p;
-                            record.loses+=o;
-                            return prev + (p*2) - o;
-                        default:
-                            record.wins+=p;
-                            record.loses+=o;
-                            return prev + (p*2) - o;
-                    }
-                },0);
-                scores[id] = record;
-            });
-
-            request(playersURL,function(error,response,playerData) {
+             request(url,function(error,response,data) {
                 if(!error && response.statusCode == 200) {
-                    console.log("Pulling name data");
-                    JSON.parse(playerData).objects.forEach(function(player) {
-                        scores[player.id].name = player.tag;
-                    })
-                    res.send({matches:details,scores:scores});
+                    var matches = JSON.parse(data).objects
+                    console.log("Pulling data:",players)
+                    // res.send(matches);
+                    var details = [];
+                    for (var i = 0; i < matches.length; i++) {
+                        if (players.indexOf(matches[i].pla.id) !== -1 || players.indexOf(matches[i].plb.id) !== -1) {
+                        details.push({
+                            playerA: matches[i].pla.tag,
+                            playerB: matches[i].plb.tag,
+                            idA: matches[i].pla.id,
+                            idB: matches[i].plb.id,
+                            score: [matches[i].sca,matches[i].scb],
+                            matchup: matches[i].rca +"v" + matches[i].rcb
+                        });
+                        }
+                    }
+                    // res.send(details)
+                    var scores = {};
+                    team.players.forEach(function(player) {
+                        var id = player;
+                        var record = {wins:0,loses:0,streaks:0}
+                        record.points = details.reduce(function(prev,current){
+                            if(current.idA === id) {
+                                var p = current.score[0];
+                                var o = current.score[1];
+                           }
+                            else if (current.idB === id) {
+                                var p = current.score[1];
+                                var o = current.score[0];
+                            }
+                            else {
+                                return prev + 0;
+                            }
+
+                            switch(true) {
+                                case (p+o) <= 5 && (p+o) >= 3:
+                                    if(o === 0) {
+                                        record.streaks++;
+                                        record.wins+=p;
+                                        return prev + (p*2) + 1;
+                                    }
+                                    record.wins+=p;
+                                    record.loses+=o;
+                                    return prev + (p*2) - o;
+                                case (p+o) <=7 && (p+o) >= 4:
+                                    if(o === 0) {
+                                        record.streaks++;
+                                        record.wins+=p;
+                                        return prev + (p*2) + 2;
+                                    }
+                                    record.wins+=p;
+                                    record.loses+=o;
+                                    return prev + (p*2) - o;
+                                case (p+o) <= 11 && (p+o) >= 5:
+                                    if (o === 0) {
+                                        record.streaks++;
+                                        record.wins+=p;
+                                        return prev + (p*2) + 3;
+                                    }
+                                    record.wins+=p;
+                                    record.loses+=o;
+                                    return prev + (p*2) - o;
+                                case (p+o) > 11:
+                                    if (o === 0) {
+                                        record.streaks++;
+                                        record.wins+=p;
+                                        return prev + (p*2) + 3;
+                                    }
+                                    record.wins+=p;
+                                    record.loses+=o;
+                                    return prev + (p*2) - o;
+                                default:
+                                    record.wins+=p;
+                                    record.loses+=o;
+                                    return prev + (p*2) - o;
+                            }
+                        },0);
+                        scores[id] = record;
+                        console.log("Record for",player,record)
+                    });
+                db.player.findAll({where: {apiId:players}}).then(function(playerArr) {
+                    playerArr.forEach(function(player) {
+                        scores[player.apiId].name = player.name;
+                    });
+                    console.log(scores);
+                    scores.date = new Date();
+                    team.scores = JSON.stringify(scores);
+                    team.save();
+                    res.send({scores:JSON.parse(team.scores)});
+                });
+            } else {
+                console.log("Error:",error);
+                res.send("Error: "+error)
                 }
-            })
+        });
         }
         else {
-            console.log("Error:",error);
-            res.send("Error: "+error)
+                res.send({scores:JSON.parse(team.scores)});
         }
     });
 });
@@ -215,30 +225,73 @@ router.put('/join',function(req,res) {
 });
 
 router.get('/get/:id',function(req,res) {
-    if(req.session.user) {
-    db.team.find({where: {userId:req.session.user.id, leagueId:req.params.id}}).then(function(team) {
-        if(team === null) {
-            res.send(false);
-        }
-        else {
-            var players = team.players.join(';');
-            var playersURL ="http://aligulac.com/api/v1/player/set/"+players+"?apikey="+process.env.ALIGULAC_KEY
+    var mapPlayerData = function(obj) {
+        return {name:obj.tag, team:obj.current_teams[0].team.name, race:obj.race};
+    }
 
-            request(playersURL,function(error,response,data) {
-                if(!error && response.statusCode == 200) {
-                    // res.send(data);
-                    var playerData = JSON.parse(data).objects.map(function(obj) {
-                        return {name:obj.tag, team:obj.current_teams[0].team.name, race:obj.race};
-                    });
-                    playerData.push(team.name)
-                    res.send(playerData);
-                }
-                else {
-                    res.send(false);
-                }
-            });
-        }
-    });
+    if(req.session.user) {
+        db.team.find({where: {userId:req.session.user.id, leagueId:req.params.id}}).then(function(team) {
+            if(team === null) {
+                res.send(false);
+            }
+            else {
+                db.player.findAll({where: {apiId: team.players}}).then(function(players) {
+                    if (players.length === 0) {
+                        var players = team.players.join(';');
+                        var playersURL ="http://aligulac.com/api/v1/player/set/"+players+"?apikey="+process.env.ALIGULAC_KEY
+
+                        request(playersURL,function(error,response,data) {
+                            if(!error && response.statusCode == 200) {
+                                // res.send(data);
+                                var playerData = JSON.parse(data).objects.map(mapPlayerData);
+                                playerData.push(team.name);
+                                    console.log("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                                    console.log("Team data -no players found-:",playerData)
+                                    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
+                                res.send(playerData);
+                            }
+                            else {
+                                res.send(false);
+                            }
+                        });
+                    }
+                    else {
+                        var noPlayerData = team.players.filter(function(p) {
+                            for(var i = 0; i < players.length; i++) {
+                                if(players[i].apiId == p) {
+                                    return false;
+                                }
+                            }
+                            return true;
+                        });
+
+                        if(noPlayerData.length === 0) {
+                            players.push(team.name);
+                            res.send(players);
+                        }
+                        else {
+                            var url = "http://aligulac.com/api/v1/player/set/"+noPlayerData.join(';')+"/?apikey="+process.env.ALIGULAC_KEY;
+                            request(url, function(error,response,newPlayerData) {
+                                   if(!error && response.statusCode == 200) {
+                                    console.log("Pulling data for players without data" );
+
+                                    var playerData = JSON.parse(newPlayerData).objects.map(mapPlayerData).concat(players);
+                                    playerData.push(team.name);
+                                    console.log("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+                                    console.log("Team data:",playerData)
+                                    console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
+                                    res.send(playerData);
+                                }
+                                else {
+                                    console.log("Error:",error);
+                                    res.send("Error: "+error);
+                                }
+                            });
+                        }
+                    }
+                })
+            }
+        });
     }
     else {
         res.send(false);

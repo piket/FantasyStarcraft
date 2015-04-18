@@ -4,7 +4,8 @@ module.exports = function(sequelize, DataTypes) {
     name: DataTypes.STRING,
     players: DataTypes.ARRAY(DataTypes.INTEGER),
     userId: DataTypes.INTEGER,
-    leagueId: DataTypes.INTEGER
+    leagueId: DataTypes.INTEGER,
+    scores: DataTypes.TEXT
   }, {
     hooks: {
       beforeCreate: function(team,options,sendback) {

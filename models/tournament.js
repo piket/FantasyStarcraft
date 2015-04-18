@@ -6,7 +6,8 @@ module.exports = function(sequelize, DataTypes) {
     endDate: DataTypes.DATE,
     roster: DataTypes.ARRAY(DataTypes.STRING),
     location: DataTypes.STRING,
-    prize: DataTypes.STRING
+    prize: DataTypes.STRING,
+    apiId: DataTypes.INTEGER
   }, {
     classMethods: {
       associate: function(models) {

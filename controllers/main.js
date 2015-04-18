@@ -37,42 +37,68 @@ router.get('/tournament/:tournament',function(req,res) {
                 var userLeagues = [];
             }
 
-            res.render('main/tournament',{param:req.params.tournament,name:tourney.name,start:tourney.startDate,end:tourney.endDate,id:tourney.id,leagues:userLeagues});
+            res.render('main/tournament',{param:tourney.id,name:tourney.name,start:tourney.startDate,end:tourney.endDate,id:tourney.id,leagues:userLeagues});
     });
 });
 
 router.get('/pull/:tournament',function(req,res) {
     console.log(req.params.tournament)
 
-    var name = req.params.tournament.replace(/_/g,' ')
+    // var name = req.params.tournament.replace(/_/g,' ')
 
-    db.tournament.find({where: {name:{ilike:name}}}).then(function(tourney) {
-        var url = "http://aligulac.com/api/v1/player/set/"+tourney.roster.join(';')+"/?apikey="+process.env.ALIGULAC_KEY;
-        request(url, function(error,response,data) {
-        // async.map(tourney.roster,function(player,callback) {
-            // request(url + player,function(error,response,data) {
-               if(!error && response.statusCode == 200) {
-                // console.log("Pulling data for player: " + player);
-                // callback(null,JSON.parse(data).objects[0]);
-                res.send({roster:JSON.parse(data).objects.sort(function(a,b) {return a.tag > b.tag ? 1:-1})});
-            }
-            else {
-                console.log("Error:",error);
-                res.send("Error: "+error);
+    db.tournament.find(req.params.tournament).then(function(tourney) {
+        db.player.findAll({where: {apiId: tourney.roster}, order_by: "name DESC"}).then(function(players) {
+            if (players.length ===  0) {
+                var url = "http://aligulac.com/api/v1/player/set/"+tourney.roster.join(';')+"/?apikey="+process.env.ALIGULAC_KEY;
+                request(url, function(error,response,data) {
+                       if(!error && response.statusCode == 200) {
+                        console.log("Pulling data for all players");
+                        res.send({roster:JSON.parse(data).objects.sort(function(a,b) {return a.tag > b.tag ? 1:-1})});
+                    }
+                    else {
+                        console.log("Error:",error);
+                        res.send("Error: "+error);
+                    }
+                });
+
+            } else {
+                var noPlayerData = tourney.roster.filter(function(p) {
+                    for(var i = 0; i < players.length; i++) {
+                        if(players[i].apiId == p) {
+                            return false;
+                        }
+                    }
+                    return true;
+                });
+
+                if(noPlayerData.length === 0) {
+                    res.send({roster:players.sort(function(a,b) {return a.name > b.name ? 1:-1})});
+                }
+                else {
+
+                    var url = "http://aligulac.com/api/v1/player/set/"+noPlayerData.join(';')+"/?apikey="+process.env.ALIGULAC_KEY;
+                    request(url, function(error,response,newPlayerData) {
+                           if(!error && response.statusCode == 200) {
+                            console.log("Pulling data for players without data" );
+
+                            var rosterData = JSON.parse(newPlayerData).objects.concat(players);
+                            res.send({roster:rosterData.sort(function(a,b) {return (a.tag ? a.tag:a.name) > (b.tag ? b.tag:b.name) ? 1:-1})});
+                        }
+                        else {
+                            console.log("Error:",error);
+                            res.send("Error: "+error);
+                        }
+                    });
+                }
             }
         });
-        // }, function(err,result) {
-        //     if (err) throw err;
-        //     // console.log(result);
-        //     res.send({roster:result});
-        // });
-});
+    });
 });
 
 // view a specific player's profile and stats
-router.get('/pros/:player',function(req,res) {
-    res.send(req.params);
-});
+// router.get('/pros/:player',function(req,res) {
+//     res.send(req.params);
+// });
 
 router.get('/pros/:player/snapshot',function(req,res) {
     db.player.findOrCreate({where: {apiId:parseInt(req.params.player)}}).spread(function(player,created) {
