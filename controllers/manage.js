@@ -5,6 +5,7 @@ var request = require('request');
 var Hashids = require('hashids');
 var hashids = new Hashids(process.env.HASH_SALT,20);
 
+
 router.post('/create/team',function(req,res) {
     // db call to create your team
     var players = [req.body.slot1,req.body.slot2,req.body.slot3,req.body.slot4,req.body.slot5,req.body.slot6];
@@ -16,16 +17,117 @@ router.post('/create/team',function(req,res) {
                     db.league.find(req.body.id).then(function(thisLeague) {
                         thisLeague.addTeam(team);
                         thisUser.addTeam(team);
-                        res.redirect('/auth/account');
-                    })
-                })
-            } else {
+
+                        db.player.findAll({where: {apiId: team.players}}).then(function(playerArr) {
+                            var noPlayerData = team.players.filter(function(p) {
+                                for(var i = 0; i < players.length; i++) {
+                                    if(players[i].apiId == p) {
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            }); // end filter
+
+                            if(noPlayerData > 0) {
+                                noPlayerData.forEach(function(playerApi) {
+
+                                db.player.create({apiId:playerApi}).then(function(player) {
+                                       var playerURL = "http://aligulac.com/api/v1/player/?apikey="+process.env.ALIGULAC_KEY+"&id="+req.params.player
+                                            request(playerURL,function(error,response,playerData) {
+                                                if(!error && response.statusCode == 200) {
+                                                    console.log("Pulling data for player: " + playerApi);
+                                                // res.send(playerData);
+                                                var ratingId = JSON.parse(playerData).objects[0].current_rating.id;
+
+                                                request("http://aligulac.com/api/v1/activerating/?apikey="+process.env.ALIGULAC_KEY + "&id="+ratingId, function(error,response,ratingData){
+                                                    if(!error && response.statusCode == 200) {
+
+                                                        var id = JSON.parse(playerData).objects[0].id
+                                                        var urls = ["http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=0&pla__id="+id,"http://aligulac.com/api/v1/match/?apikey="+process.env.ALIGULAC_KEY+"&limit=100&plb__id="+id]
+
+                                                        async.map(urls,function(call,callback) {
+                                                            request(call,function(error,response,data) {
+                                                               if(!error && response.statusCode == 200) {
+                                                                console.log("Pulling stat data:",call);
+
+                                                                var dataArr = JSON.parse(data).objects.map(function(obj) {
+                                                                    if (obj.pla.id == req.params.player) {
+                                                                        return {player:obj.sca,opponent:obj.scb,matchup:"v" + obj.rcb};
+                                                                    } else {
+                                                                        return {player:obj.scb,opponent:obj.sca,matchup:"v" + obj.rca};
+                                                                    }
+                                                                });
+
+                                                                callback(null,dataArr);
+                                                            } else {
+                                                                console.log("Error:",error);
+                                                                res.send("Error: " + error);
+                                                            }
+                                                            });
+                                                        },function(err,result) {
+                                                            if (err) throw err;
+                                                            var flatResults = result[0].concat(result[1]);
+                                                            console.log("Stats loaded for:",req.params.player);
+
+                                                            var ratings = JSON.parse(ratingData).objects[0] || {position:'N/A',position_vp:'N/A',position_vt:'N/A',position_vz:'N/A'};
+
+                                                            player.name = JSON.parse(playerData).objects[0].tag;
+                                                            player.team = JSON.parse(playerData).objects[0].current_teams.length > 0 ? JSON.parse(playerData).objects[0].current_teams[0].team.name : 'Free Agent';
+                                                            player.country = JSON.parse(playerData).objects[0].country;
+                                                            player.race = JSON.parse(playerData).objects[0].race;
+                                                            var stats = {
+                                                                vP:0, vPCount:0, vT:0, vTCount:0, vZ:0, vZCount:0, overall:0, overallCount:flatResults.length, rating:(ratings.position === 'N/A' ? false:true),
+                                                                rank:ratings.position, vPRank:ratings.position_vp, vTRank:ratings.position_vt, vZRank:ratings.position_vz
+                                                            };
+
+                                                            for (var i = 0; i < flatResults.length; i++) {
+                                                                switch(flatResults[i].matchup) {
+                                                                    case 'vP':
+                                                                    stats.overall += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                                                    stats.vP += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                                                    stats.vPCount++;
+                                                                    break;
+                                                                    case 'vT':
+                                                                    stats.overall += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                                                    stats.vT += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                                                    stats.vTCount++;
+                                                                    break;
+                                                                    case 'vZ':
+                                                                    stats.overall += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                                                    stats.vZ += flatResults[i].player > flatResults[i].opponent ? 1:0;
+                                                                    stats.vZCount++;
+                                                                    break;
+                                                                } // end switch
+                                                            } // end for loop
+
+                                                            player.stats = JSON.stringify(stats);
+                                                            player.save();
+                                                            req.flash('success','You have created a new team.');
+                                                            res.redirect('/auth/account/')
+                                                    // res.send({playerData:JSON.parse(playerData).objects[0],count:flatResults.length,results:flatResults,ratingData:JSON.parse(ratingData).objects[0]});
+                                                    }); // end async
+                                                    } // end if no response from rating
+                                                }); // end rating request
+                                            } // end if no response from players
+                                            else {
+                                                res.send(error);
+                                            }
+
+                                        }); // end player request
+                                    }); // end create player
+                                }); // end for each player
+                            } // end if there are players with no data
+                        }); // end find all players
+                    }); // end find league
+                }); // end find user
+            } // end if created
+            else {
                 req.flash('danger','You already have a team in this league');
                 res.redirect('back');
-            }
-        })
+        }
+    }); // end spread
     // res.send(req.body);
-});
+}); // end router
 
 router.post('/create/league',function(req,res) {
     db.league.findOrCreate({where: {name:req.body.name}, defaults: {name:req.body.name,endDate:req.body.endDate}}).spread(function(league,created) {
@@ -258,14 +360,7 @@ router.get('/get/:id',function(req,res) {
                         });
                     }
                     else {
-                        var noPlayerData = team.players.filter(function(p) {
-                            for(var i = 0; i < players.length; i++) {
-                                if(players[i].apiId == p) {
-                                    return false;
-                                }
-                            }
-                            return true;
-                        });
+                        var noPlayerData = team.players.filter(filterPlayers);
 
                         if(noPlayerData.length === 0) {
                             players.push(team.name);
