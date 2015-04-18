@@ -360,7 +360,14 @@ router.get('/get/:id',function(req,res) {
                         });
                     }
                     else {
-                        var noPlayerData = team.players.filter(filterPlayers);
+                        var noPlayerData = team.players.filter(function(p) {
+                                for(var i = 0; i < players.length; i++) {
+                                    if(players[i].apiId == p) {
+                                        return false;
+                                    }
+                                }
+                                return true;
+                            });
 
                         if(noPlayerData.length === 0) {
                             players.push(team.name);

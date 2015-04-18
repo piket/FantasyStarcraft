@@ -79,12 +79,16 @@ $(function(){
         });
 }
 
-var loadTeamData = function() {
+// if on a tournament page
+if($('ul.roster').is('ul')) {
+    $('div.roster>img.loading').show();
+    var teamLoaded = false;
+
     $.ajax({
         method: 'get',
         url: '/manage/get/'+$('#selectLeague').val()
     }).done(function(data) {
-        // console.log("Data:",data)
+        console.log("Data:",data);
         if(data !== false) {
             for(var i = 0; i < 6; i++) {
                 var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
@@ -94,27 +98,13 @@ var loadTeamData = function() {
             }
             $('#inputTeamName').val(data[6]);
             $('#createTeamBtn').slideUp();
-            $('.remove-btn').removeClass('remove-btn').addClass('add-btn');
-            $('.add-btn').hide();
             teamLoaded = true;
         }
         else {
-            $('#inputTeamName').val('');
-            $('#createTeamBtn').slideDown();
-            var filledSlot = $('.filled').removeClass('filled').addClass('slot');
-            filledSlot.children('img').remove();
-            filledSlot.children('h3').text('Empty Player Slot');
             $('.add-btn').show();
-            teamLoaded = false;
         }
     });
-}
 
-// if on a tournament page
-if($('ul.roster').is('ul')) {
-    $('div.roster>img.loading').show();
-    var teamLoaded = false;
-    loadTeamData();
     // console.log(teamLoaded)
 
     $.ajax({method: 'get',url: $('#param').val()}).done(function(rosterData) {
@@ -220,7 +210,32 @@ $('.add-btn').hover(function(e) {
 
 
 $('#selectLeague').change(function() {
-    loadTeamData();
+    $.ajax({
+        method: 'get',
+        url: '/manage/get/'+$(this).val()
+    }).done(function(data) {
+        console.log("Data:",data)
+        if(data !== false) {
+            for(var i = 0; i < 6; i++) {
+                var openSlot = $('.slot').first().addClass('filled').removeClass('slot');
+                openSlot.children('h3').text(data[i].name);
+                openSlot.append('<img src="/images/teams/'+data[i].team+'.png" class="teamName icon-lg slot-img">');
+                openSlot.append('<img src="/images/'+data[i].race+'.png" class="icon-sm race-icon slot-img" style="top:47px">');
+            }
+            $('#inputTeamName').val(data[6]);
+            $('#createTeamBtn').slideUp();
+            $('.remove-btn').removeClass('remove-btn').addClass('add-btn');
+            $('.add-btn').hide();
+        }
+        else {
+            $('#inputTeamName').val('');
+            $('#createTeamBtn').slideDown();
+            var filledSlot = $('.filled').removeClass('filled').addClass('slot');
+            filledSlot.children('img').remove();
+            filledSlot.children('h3').text('Empty Player Slot');
+            $('.add-btn').show();
+        }
+    });
 });
 });
 
