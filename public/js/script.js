@@ -286,6 +286,7 @@ if($('table.team-table').is('table')) {
     var loadTable = function(idx) {
         if (idx < $('.team-table').length) {
             var team = $('.teamId').eq(idx);
+            var id = team.attr('id');
             console.log("\n\n~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\nLoading:",$(team).val());
             console.log("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n");
 
@@ -295,17 +296,17 @@ if($('table.team-table').is('table')) {
             }).done(function(data) {
                 console.log("Data loaded:",data);
                 var total = 0;
-                $('#loader'+idx).remove();
+                $('#loader'+id).remove();
 
                 for(var player in data.scores) {
                     // console.log(player);
                     if (player !== "date") {
                         var playerLine = '<tr><td>'+data.scores[player].name+'</td><td class="text-center">'+data.scores[player].wins+'</td><td class="text-center">'+data.scores[player].loses+'</td><td class="text-center">'+data.scores[player].streaks+'</td><td class="text-center">'+data.scores[player].points+'</td></tr>';
-                        $('#'+idx).append(playerLine)
+                        $('#'+id).append(playerLine)
                         total += data.scores[player].points;
                     }
                 }
-                $('#'+idx).children().children().children('.total').text(total);
+                $('#'+id).children().children().children('.total').text(total);
                 loadTable(idx+1);
             });
         }
