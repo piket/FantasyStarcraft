@@ -4,7 +4,12 @@ var bcrypt = require('bcrypt');
 
 module.exports = function(sequelize, DataTypes) {
   var user = sequelize.define("user", {
-    name: DataTypes.STRING,
+    name: {
+        type: DataTypes.STRING,
+        validate: {
+          len: {args: [4,30], msg: 'Your username must be between 3 and 30 characters long.'}
+        }
+      },
     email: {
       type: DataTypes.STRING,
       validate: {

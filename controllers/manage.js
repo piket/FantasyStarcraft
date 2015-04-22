@@ -61,7 +61,8 @@ router.post('/create/team',function(req,res) {
                                                                 callback(null,dataArr);
                                                             } else {
                                                                 console.log("Error:",error);
-                                                                res.send("Error: " + error);
+                                                                req.flash('danage',error);
+                                                                res.redirect('back');
                                                             }
                                                             });
                                                         },function(err,result) {
@@ -110,7 +111,8 @@ router.post('/create/team',function(req,res) {
                                                 }); // end rating request
                                             } // end if no response from players
                                             else {
-                                                res.send(error);
+                                                req.flash('danger',error)
+                                                res.redirect('back');
                                             }
 
                                         }); // end player request
@@ -125,7 +127,22 @@ router.post('/create/team',function(req,res) {
                 req.flash('danger','You already have a team in this league');
                 res.redirect('back');
         }
-    }); // end spread
+    }).catch(function(error) {
+        if(error){
+            if(Array.isArray(error.errors)){
+                error.errors.forEach(function(errorItem){
+                    req.flash('danger',errorItem.message);
+                });
+            }else{
+                req.flash('danger','unknown error');
+                console.log('unknown error',error);
+            }
+        }else{
+            req.flash('danger','unknown error');
+            console.log('error, but no error...');
+        }
+        res.redirect('back');
+    }); // end spread.catch
     // res.send(req.body);
 }); // end router
 
@@ -146,6 +163,21 @@ router.post('/create/league',function(req,res) {
             req.flash('danger','A league with that name already exists, please choose a new name');
             res.redirect('back');
         }
+    }).catch(function(error) {
+        if(error){
+            if(Array.isArray(error.errors)){
+                error.errors.forEach(function(errorItem){
+                    req.flash('danger',errorItem.message);
+                });
+            }else{
+                req.flash('danger','unknown error');
+                console.log('unknown error',error);
+            }
+        }else{
+            req.flash('danger','unknown error');
+            console.log('error, but no error...');
+        }
+        res.redirect('back');
     });
 });
 
@@ -387,8 +419,8 @@ router.get('/get/:id',function(req,res) {
                                     res.send(playerData);
                                 }
                                 else {
-                                    console.log("Error:",error);
-                                    res.send("Error: "+error);
+                                    console.log("danger",error);
+                                    res.send(false);
                                 }
                             });
                         }

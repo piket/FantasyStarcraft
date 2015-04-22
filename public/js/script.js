@@ -32,12 +32,12 @@ $(function(){
             valid = false;
         }
 
-        if($('#uname').val().length < 1) {
+        if($('#uname').val().length < 4) {
             $('#unameLabel').show();
             valid = false;
         }
 
-        if($('#email').val().length < 7 && $('#email').text().indexOf('@') === -1) {
+        if($('#email').val().length < 5 || $('#email').text().indexOf('@') === -1) {
             $('#emailLabel').show();
             valid = false;
         }

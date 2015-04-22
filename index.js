@@ -86,6 +86,12 @@ app.use('/',require('./controllers/main.js'));
 app.use('/auth',require('./controllers/auth.js'));
 app.use('/manage',require('./controllers/manage.js'));
 
+app.use(function(req,res,next){
+    res.status(404);
+
+    res.render('main/error',{url:req.protocol +'://'+req.get('host')+req.url,error:"404 Page Not Found"});
+});
+
 app.listen(process.env.PORT || 3000,function(){
     console.log('Server is connected');
 });

@@ -22,7 +22,7 @@ router.get('/tournament/:tournament',function(req,res) {
     var name = req.params.tournament.replace(/_/g,' ')
 
     db.tournament.find({where: {name:{ilike:name}}, include: [{model:db.league,include: [db.user,db.team]}]}).then(function(tourney) {
-
+        if(tourney !== null) {
             if(req.session.user) {
             var userLeagues = tourney.leagues.filter(function(league) {
                 for(var i = 0; i < league.users.length; i++) {
@@ -38,6 +38,10 @@ router.get('/tournament/:tournament',function(req,res) {
             }
 
             res.render('main/tournament',{param:tourney.id,name:tourney.name,start:tourney.startDate,end:tourney.endDate,id:tourney.id,leagues:userLeagues});
+        }
+        else {
+            res.render('main/error',{url:req.protocol +'://'+req.get('host')+req.url,error:"404 Page Not Found"});
+        }
     });
 });
 
@@ -196,13 +200,14 @@ else {
 });
 });
 // view a specific league you are apart of
-router.get('/league/:leagueid',function(req,res) {
-    res.send(req.params);
-});
+// router.get('/league/:leagueid',function(req,res) {
+//     res.send(req.params);
+// });
 
 // view a specific team you own
-router.get('/team/:teamid',function(req,res) {
-    res.send(req.params);
-});
+// router.get('/team/:teamid',function(req,res) {
+//     res.send(req.params);
+// });
+
 
 module.exports = router;

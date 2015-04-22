@@ -1,10 +1,20 @@
 "use strict";
 module.exports = function(sequelize, DataTypes) {
   var league = sequelize.define("league", {
-    name: DataTypes.STRING,
+    name: {
+        type: DataTypes.STRING,
+        validate: {
+          len: {args: [3,30], msg: 'Your league name must be between 3 and 30 characters long'}
+        }
+      },
     endDate: DataTypes.DATE,
     tournamentId: DataTypes.INTEGER,
-    tournamentApiId: DataTypes.INTEGER
+    tournamentApiId: {
+      type: DataTypes.INTEGER,
+      validate: {
+        notEmpty: true
+      }
+    }
   }, {
     classMethods: {
       associate: function(models) {
