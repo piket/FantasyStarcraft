@@ -37,7 +37,7 @@ $(function(){
             valid = false;
         }
 
-        if($('#email').val().length < 5 || $('#email').text().indexOf('@') === -1) {
+        if($('#email').val().length < 5 || $('#email').val().indexOf('@') === -1) {
             $('#emailLabel').show();
             valid = false;
         }
