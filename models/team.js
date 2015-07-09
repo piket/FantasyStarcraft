@@ -10,7 +10,7 @@ module.exports = function(sequelize, DataTypes) {
     players: {
         type: DataTypes.ARRAY(DataTypes.INTEGER),
         validate: {
-          len: { agrs: [6], msg: 'Your team must consist of exactly 6 players.'}
+          len: { args: [6], msg: 'Your team must consist of exactly 6 players.'}
         }
       },
     userId: DataTypes.INTEGER,
